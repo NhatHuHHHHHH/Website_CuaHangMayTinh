@@ -1,0 +1,247 @@
+﻿@model IEnumerable<CuaHangMayTinh2.Models.SanPhamLienQuan>
+@{
+    ViewBag.Title = "SanPhamLienQuan";
+    Layout = "~/Views/Shared/_LayoutPageAdmin.cshtml";
+}
+
+<style>
+    h2 {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--accent-cyan);
+        text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 221, 235, 0.5);
+        }
+
+    .btn-secondary {
+        background: var(--secondary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-secondary:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(138, 74, 243, 0.5);
+        }
+
+    .table {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--accent-purple);
+        color: var(--text-light);
+    }
+
+        .table th {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .table td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+    .btn-danger {
+        background: var(--accent-orange);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-danger:hover {
+            background: #e65b50;
+            box-shadow: 0 0 15px rgba(255, 111, 97, 0.5);
+        }
+
+    /* Phân trang mới */
+    .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #2d3748;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .pagination-info {
+        font-size: 14px;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagination-item {
+        margin: 0 2px;
+    }
+
+    .pagination-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        background-color: #3a4556;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+        .pagination-link:hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .pagination-link.active {
+            background-color: #007bff;
+        }
+
+    .pagination-ellipsis {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        color: white;
+    }
+</style>
+
+<h2>Quản lý sản phẩm liên quan</h2>
+
+<a href="@Url.Action("CreateSanPhamLienQuan")" class="btn btn-primary mb-3">Thêm sản phẩm liên quan</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Sản phẩm chính</th>
+            <th>Sản phẩm liên quan</th>
+            <th>Loại quan hệ</th>
+            <th>Ưu tiên</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.SanPham.TenSP</td>
+                <td>@item.SanPham1.TenSP</td>
+                <td>@item.LoaiQuanHe</td>
+                <td>@item.UuTien</td>
+                <td>
+                    <a href="@Url.Action("DeleteSanPhamLienQuan", new { sanPhamChinhID = item.SanPhamChinhID, sanPhamLienQuanID = item.SanPhamLienQuanID })" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Phân trang mới -->
+@if (ViewBag.TotalPages != null && (int)ViewBag.TotalPages > 0)
+{
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = (int)ViewBag.TotalPages;
+    int totalItems = ViewBag.TotalItems ?? 0;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int startItem = (currentPage - 1) * pageSize + 1;
+    int endItem = Math.Min(currentPage * pageSize, totalItems);
+
+    <div class="pagination-container">
+        <div class="pagination-info">
+            Đang xem @startItem đến @endItem trong tổng số @totalItems mục
+        </div>
+        <div>
+            <ul class="pagination">
+                @if (currentPage > 1)
+                {
+                    <li class="pagination-item">
+                        <a href="@Url.Action("SanPhamLienQuan", new { page = currentPage - 1 })" class="pagination-link">Trước</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="pagination-item">
+                        <span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Trước</span>
+                    </li>
+                }
+
+                @{
+                    const int maxPagesToShow = 5;
+                    int startPage = Math.Max(1, currentPage - 2);
+                    int endPage = Math.Min(totalPages, startPage + maxPagesToShow - 1);
+
+                    if (endPage - startPage + 1 < maxPagesToShow)
+                    {
+                        startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+                    }
+
+                    // Hiển thị các trang đầu
+                    for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="pagination-item">
+                            <a href="@Url.Action("SanPhamLienQuan", new { page = i })"
+                               class="pagination-link @(i == currentPage ? "active" : "")">@i</a>
+                        </li>
+                    }
+
+                    // Hiển thị dấu "..." nếu còn nhiều trang phía sau
+                    if (endPage < totalPages - 1)
+                    {
+                        <li class="pagination-item">
+                            <span class="pagination-ellipsis">...</span>
+                        </li>
+                    }
+
+                    // Hiển thị trang cuối cùng nếu không liền kề với các trang đã hiển thị
+                    if (endPage < totalPages)
+                    {
+                        <li class="pagination-item">
+                            <a href="@Url.Action("SanPhamLienQuan", new { page = totalPages })"
+                               class="pagination-link">@totalPages</a>
+                        </li>
+                    }
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <li class="pagination-item">
+                        <a href="@Url.Action("SanPhamLienQuan", new { page = currentPage + 1 })" class="pagination-link">Tiếp</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="pagination-item">
+                        <span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Tiếp</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+else
+{
+    <p>Không có trang nào để hiển thị.</p>
+}

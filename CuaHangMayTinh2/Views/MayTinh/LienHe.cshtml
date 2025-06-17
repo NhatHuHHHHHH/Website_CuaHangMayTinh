@@ -1,0 +1,366 @@
+﻿@{
+    ViewBag.Title = "Liên hệ - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Font chữ độc đáo từ Google Fonts */
+    import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@400;700&display=swap');
+
+    /* Định nghĩa biến màu sắc phong cách galaxy */
+    :root {
+        --galaxy-dark: #0d1b2a;
+        --galaxy-blue: #1b263b;
+        --galaxy-purple: #3a0ca3;
+        --galaxy-cyan: #00ddeb;
+        --galaxy-orange: #ff6f61;
+        --galaxy-pink: #ff2e63;
+        --text-light: #e0e1dd;
+        --neon-glow: 0 0 10px rgba(0, 221, 235, 0.5);
+        --gradient-galaxy: linear-gradient(135deg, #1b263b, #3a0ca3);
+        --gradient-galaxy-hover: linear-gradient(135deg, #3a0ca3, #00ddeb);
+        --gradient-neon: linear-gradient(90deg, #00ddeb, #ff2e63);
+    }
+
+    /* Container chính */
+    .contact-container {
+        position: relative;
+        padding: 60px 0;
+        color: var(--text-light);
+        background: var(--gradient-galaxy);
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    /* Hiệu ứng fade-in */
+    keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tiêu đề chính */
+    .section-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: var(--gradient-neon);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: var(--neon-glow);
+        margin-bottom: 50px;
+        text-align: center;
+        position: relative;
+        animation: glow 2s infinite alternate, textWave 3s infinite;
+    }
+
+    /* Hiệu ứng glow cho tiêu đề */
+    keyframes glow {
+        0% { text-shadow: 0 0 10px rgba(0, 221, 235, 0.5), 0 0 20px rgba(255, 46, 99, 0.5); }
+        100% { text-shadow: 0 0 20px rgba(0, 221, 235, 0.8), 0 0 30px rgba(255, 46, 99, 0.8); }
+    }
+
+    /* Hiệu ứng sóng chữ cho tiêu đề */
+    keyframes textWave {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+
+    /* Thẻ thông tin liên hệ */
+    .contact-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--galaxy-cyan);
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+        padding: 30px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 25px rgba(0, 221, 235, 0.6);
+    }
+
+    .contact-info {
+        font-family: 'Exo 2', sans-serif;
+        font-size: 1.2rem;
+        color: #34495e;
+    }
+
+    .contact-info i {
+        color: var(--galaxy-orange);
+        margin-right: 15px;
+        font-size: 1.5rem;
+    }
+
+    .contact-info h4 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8rem;
+        color: var(--galaxy-blue);
+        margin-bottom: 20px;
+    }
+
+    /* Form liên hệ */
+    .contact-form {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--galaxy-cyan);
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+        padding: 30px;
+        transition: all 0.3s ease;
+    }
+
+    .contact-form:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 25px rgba(0, 221, 235, 0.6);
+    }
+
+    .form-label {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: var(--galaxy-orange);
+    }
+
+    .form-control {
+        background: rgba(0, 221, 235, 0.1);
+        border: 2px solid var(--galaxy-purple);
+        color: #34495e;
+        border-radius: 10px;
+        font-family: 'Exo 2', sans-serif;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: rgba(0, 221, 235, 0.2);
+        border-color: var(--galaxy-cyan);
+        box-shadow: var(--neon-glow);
+    }
+
+    /* Nút gửi */
+    .btn-submit {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        padding: 12px 30px;
+        background: var(--gradient-neon);
+        border: none;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-submit:hover {
+        background: var(--gradient-galaxy-hover);
+        box-shadow: 0 0 20px rgba(0, 221, 235, 0.8);
+        transform: scale(1.1) rotate(2deg);
+    }
+
+    .btn-submit::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn-submit:active::before {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+    }
+
+    /* FAQ Section */
+    .faq-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--galaxy-cyan);
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+        padding: 30px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .faq-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 25px rgba(0, 221, 235, 0.6);
+    }
+
+    .faq-card h4 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8rem;
+        color: var(--galaxy-blue);
+        margin-bottom: 20px;
+    }
+
+    .faq-item {
+        margin-bottom: 20px;
+    }
+
+    .faq-item h5 {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--galaxy-orange);
+    }
+
+    .faq-item p {
+        font-family: 'Exo 2', sans-serif;
+        font-size: 1.1rem;
+        color: #34495e;
+    }
+
+    /* Bản đồ */
+    .map-container {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+        margin-top: 20px;
+    }
+
+    /* Hiệu ứng ngôi sao nền */
+    .contact-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+        opacity: 0.2;
+        z-index: -1;
+        animation: starfield 50s linear infinite;
+    }
+
+    keyframes starfield {
+        0% { background-position: 0 0; }
+        100% { background-position: 1000px 1000px; }
+    }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .section-title {
+            font-size: 2.5rem;
+        }
+
+        .contact-card, .contact-form, .faq-card {
+            margin: 0 15px;
+        }
+    }
+</style>
+
+<div class="contact-container container">
+    <div class="row">
+        <!-- Thông tin liên hệ -->
+        <div class="col-md-6 mb-4">
+            <div class="contact-card">
+                <h4 class="text-center">Thông Tin Liên Hệ</h4>
+                <div class="contact-info">
+                    <p><i class="bi bi-geo-alt-fill"></i> <strong>Trụ sở chính:</strong> 140 Đ. Lê Trọng Tấn, Tây Thạnh, Tân Phú, Hồ Chí Minh</p>
+                    <p><i class="bi bi-geo-alt-fill"></i> <strong>Chi nhánh 1:</strong> 456 Đường Sáng Tạo, Quận 20, TP.HCM</p>
+                    <p><i class="bi bi-geo-alt-fill"></i> <strong>Chi nhánh 2:</strong> 789 Đường Đổi Mới, Quận 21, TP.HCM</p>
+                    <p><i class="bi bi-telephone-fill"></i> <strong>Hotline:</strong> 0867909722</p>
+                    <p><i class="bi bi-telephone-fill"></i> <strong>Hỗ trợ kỹ thuật:</strong> 1900 0001</p>
+                    <p><i class="bi bi-envelope-fill"></i> <strong>Email:</strong> Huy-CashCash@gmail.com</p>
+                    <p><i class="bi bi-clock-fill"></i> <strong>Giờ làm việc:</strong> 8:00 - 22:00 (Tất cả các ngày trong tuần)</p>
+                </div>
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/dir//140+%C4%90.+L%C3%AA+Tr%E1%BB%8Dng+T%E1%BA%A5n,+T%C3%A2y+Th%E1%BA%A1nh,+T%C3%A2n+Ph%C3%BA,+H%E1%BB%93+Ch%C3%AD+Minh/10.806143,106.5462637,12z/data=!4m8!4m7!1m0!1m5!1m1!1s0x31752be27d8b4f4d:0x92dcba2950430867!2m2!1d106.6286656!2d10.8061539?entry=ttu&g_ep=EgoyMDI1MDMxNy4wIKXMDSoASAFQAw%3D%3D" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form liên hệ -->
+        <div class="col-md-6 mb-4">
+            <div class="contact-form">
+                <h4 class="text-center">Gửi Tin Nhắn Cho Chúng Tôi</h4>
+                <form id="contactForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Họ và tên *</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="phone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Chủ đề *</label>
+                        <select class="form-control" id="subject" required>
+                            <option value="">Chọn chủ đề</option>
+                            <option value="support">Hỗ trợ kỹ thuật</option>
+                            <option value="order">Thắc mắc đơn hàng</option>
+                            <option value="feedback">Góp ý</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Tin nhắn *</label>
+                        <textarea class="form-control" id="message" rows="5" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-submit">Gửi Tin Nhắn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="faq-card">
+                <h4 class="text-center">Câu Hỏi Thường Gặp</h4>
+                <div class="faq-item">
+                    <h5>1. Làm thế nào để theo dõi đơn hàng của tôi?</h5>
+                    <p>Bạn có thể theo dõi đơn hàng bằng cách đăng nhập vào tài khoản của mình và vào mục "Đơn hàng của tôi". Ngoài ra, bạn cũng có thể liên hệ hotline 0388285455 để được hỗ trợ.</p>
+                </div>
+                <div class="faq-item">
+                    <h5>2. Tôi có thể đổi trả sản phẩm không?</h5>
+                    <p>Có, TechZone hỗ trợ đổi trả sản phẩm trong vòng 30 ngày nếu sản phẩm có lỗi từ nhà sản xuất. Vui lòng xem chi tiết tại "Chính sách đổi trả".</p>
+                </div>
+                <div class="faq-item">
+                    <h5>3. Làm thế nào để liên hệ với bộ phận kỹ thuật?</h5>
+                    <p>Bạn có thể gọi đến số 1900 1234 hoặc gửi email đến support@techzone.com để được hỗ trợ kỹ thuật nhanh chóng.</p>
+                </div>
+                <div class="faq-item">
+                    <h5>4. TechZone có giao hàng toàn quốc không?</h5>
+                    <p>Có, chúng tôi giao hàng trên toàn quốc với thời gian giao hàng từ 1-5 ngày tùy khu vực. Phí giao hàng sẽ được tính khi bạn đặt hàng.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#contactForm").on("submit", function (e) {
+                e.preventDefault();
+
+                var form = $(this);
+                if (!form[0].checkValidity()) {
+                    form[0].reportValidity();
+                    return;
+                }
+
+                // Giả lập gửi form (thay thế bằng AJAX call thực tế nếu có backend)
+                setTimeout(function () {
+                    alert("Tin nhắn của bạn đã được gửi thành công! Chúng tôi sẽ phản hồi trong vòng 24 giờ.");
+                    form[0].reset();
+                }, 1000);
+            });
+        });
+    </script>
+}

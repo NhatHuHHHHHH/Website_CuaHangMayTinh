@@ -1,0 +1,334 @@
+﻿@model CuaHangMayTinh2.Models.SanPham
+@{
+    ViewBag.Title = "CreateSanPham";
+    Layout = "~/Views/Shared/_LayoutPageAdmin.cshtml";
+}
+
+<style>
+    h2 {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--accent-cyan);
+        text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        color: var(--text-light);
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--accent-purple);
+        color: var(--text-light);
+        border-radius: 5px;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 10px rgba(0, 221, 235, 0.3);
+        color: var(--text-light);
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-cyan);
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.5);
+    }
+
+    .btn-primary:disabled {
+        background: var(--secondary-gradient);
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: var(--secondary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: var(--accent-purple);
+        box-shadow: 0 0 15px rgba(138, 74, 243, 0.5);
+    }
+
+    .text-danger {
+        color: var(--accent-orange);
+    }
+
+    .custom-file-upload {
+        display: inline-block;
+        padding: 8px 15px;
+        background: var(--secondary-gradient);
+        color: var(--text-light);
+        border: 1px solid var(--accent-purple);
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .custom-file-upload:hover {
+        background: var(--accent-purple);
+        box-shadow: 0 0 10px rgba(138, 74, 243, 0.5);
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .image-preview {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid var(--accent-purple);
+    }
+
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid var(--accent-cyan);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        color: var(--text-light);
+    }
+
+    .alert-danger {
+        background: rgba(255, 111, 97, 0.2);
+        border: 1px solid var(--accent-orange);
+    }
+</style>
+
+<h2>Thêm sản phẩm</h2>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
+
+@if (ViewData.ModelState.Any(x => x.Value.Errors.Any()))
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    </div>
+}
+
+@using (Html.BeginForm("CreateSanPham", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "createSanPhamForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SanPhamID, "ID")
+        @Html.EditorFor(model => model.SanPhamID, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.SanPhamID, "", new { @class = "text-danger" })
+    </div>
+    
+    <div class="form-group">
+        @Html.LabelFor(model => model.TenSP, "Tên sản phẩm")
+        @Html.EditorFor(model => model.TenSP, new { htmlAttributes = new { @class = "form-control", required = "required" } })
+        @Html.ValidationMessageFor(model => model.TenSP, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DanhMucID, "Danh mục")
+        @Html.DropDownList("DanhMucID", null, "Chọn danh mục", htmlAttributes: new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(model => model.DanhMucID, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Gia, "Giá")
+        @Html.EditorFor(model => model.Gia, new { htmlAttributes = new { @class = "form-control", type = "number", step = "0.01", required = "required" } })
+        @Html.ValidationMessageFor(model => model.Gia, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.SoLuongKho, "Số lượng kho")
+        @Html.EditorFor(model => model.SoLuongKho, new { htmlAttributes = new { @class = "form-control", type = "number", required = "required" } })
+        @Html.ValidationMessageFor(model => model.SoLuongKho, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ThuongHieu, "Thương hiệu")
+        @Html.EditorFor(model => model.ThuongHieu, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.ThuongHieu, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ViXuLy, "Vi xử lý")
+        @Html.EditorFor(model => model.ViXuLy, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.ViXuLy, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.RAM, "RAM")
+        @Html.EditorFor(model => model.RAM, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.RAM, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.LuuTru, "Lưu trữ")
+        @Html.EditorFor(model => model.LuuTru, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.LuuTru, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.KichThuocManHinh, "Kích thước màn hình")
+        @Html.EditorFor(model => model.KichThuocManHinh, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.KichThuocManHinh, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MauSac, "Màu sắc")
+        @Html.EditorFor(model => model.MauSac, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.MauSac, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DungLuongPin, "Dung lượng pin")
+        @Html.EditorFor(model => model.DungLuongPin, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.DungLuongPin, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MoTa, "Mô tả")
+        @Html.TextAreaFor(model => model.MoTa, new { @class = "form-control", rows = "5" })
+        @Html.ValidationMessageFor(model => model.MoTa, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label for="HinhAnhFiles">Hình ảnh sản phẩm</label>
+        <label class="custom-file-upload">
+            <input type="file" name="HinhAnhFiles" id="HinhAnhFiles" accept="image/*" multiple onchange="previewImages(event)" />
+            Chọn hình ảnh
+        </label>
+        @if (ViewData.ModelState.ContainsKey("HinhAnhFiles"))
+        {
+            <span class="text-danger">@Html.ValidationMessage("HinhAnhFiles")</span>
+        }
+        <div class="image-preview-container" id="imagePreviewContainer"></div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitButton">Thêm</button>
+    <a href="@Url.Action("SanPham")" class="btn btn-secondary">Quay lại</a>
+}
+
+<script>
+    function previewImages(event) {
+        const files = event.target.files;
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        previewContainer.innerHTML = '';
+
+        const maxFileSize = 5 * 1024 * 1024;
+        let hasError = false;
+
+        if (files && files.length > 0) {
+            console.log("Đã chọn " + files.length + " file");
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (file) {
+                    if (file.size > maxFileSize) {
+                        alert("File " + file.name + " quá lớn! Kích thước tối đa là 5MB.");
+                        hasError = true;
+                        continue;
+                    }
+
+                    console.log("Đang xử lý file: " + file.name);
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        console.log("Đã đọc file thành công");
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'image-preview';
+                        previewContainer.appendChild(img);
+                    };
+
+                    reader.onerror = function (e) {
+                        console.error("Lỗi khi đọc file: ", e);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            if (hasError) {
+                document.getElementById('HinhAnhFiles').value = '';
+            }
+        } else {
+            console.log("Không có file nào được chọn");
+        }
+    }
+
+    document.getElementById('createSanPhamForm').addEventListener('submit', function (e) {
+        const form = this;
+        const submitButton = document.getElementById('submitButton');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        if (form.checkValidity()) {
+            console.log("Form hợp lệ, đang submit...");
+            submitButton.disabled = true;
+            loadingOverlay.style.display = 'flex';
+        } else {
+            console.log("Form không hợp lệ");
+            e.preventDefault();
+            form.reportValidity();
+        }
+    });
+
+    window.onload = function () {
+        const hasErrors = document.querySelector('.validation-summary-errors')?.children.length > 0;
+        if (hasErrors) {
+            console.log("Có lỗi từ server");
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'none';
+            document.getElementById('submitButton').disabled = false;
+        }
+    };
+</script>

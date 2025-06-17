@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d14d5dd70caa404b9d7d678bf6e0754c" Name="Diagram1" ZoomLevel="66">
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.ChiTietDonHang" Width="1.5" PointX="5.375" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.DanhGia" Width="1.5" PointX="7.5" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.DanhMuc" Width="1.5" PointX="0.75" PointY="8" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.DonHang" Width="1.5" PointX="0.75" PointY="10" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.GioHang" Width="1.5" PointX="7.5" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.HinhAnhSanPham" Width="1.5" PointX="7.5" PointY="10.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.KhachHang" Width="1.5" PointX="3" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.KhuyenMai" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.SanPham" Width="1.5" PointX="3" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.SanPhamLienQuan" Width="1.5" PointX="5.375" PointY="13.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.SanPhamThuongMuaCung" Width="1.5" PointX="0.75" PointY="13.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.UserViews" Width="1.5" PointX="5.25" PointY="10.375" IsExpanded="true" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_ChiTietDonHang_DonHang" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_ChiTietDonHang_SanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_DanhGia_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_DanhGia_SanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPham_DanhMuc" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_DonHang_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_GioHang_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_GioHang_SanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_HinhAnhSanPham_SanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_UserViews_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPhamLienQuan_SanPhamChinh" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPhamLienQuan_SanPhamLienQuan" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPhamThuongMuaCung_SanPham1" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPhamThuongMuaCung_SanPham2" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_UserViews_SanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.KhuyenMaiSanPham" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.SanPhamYeuThich" Width="1.5" PointX="5.5" PointY="4.5" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK__SanPhamYe__Khach__17036CC0" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK__SanPhamYe__SanPh__17F790F9" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.ProductSequence" Width="1.5" PointX="7.5" PointY="13.25" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.UserBehavior" Width="1.5" PointX="9.375" PointY="7.375" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.UserSession" Width="1.5" PointX="9.375" PointY="4.625" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_UserBehavior_KhachHang" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_UserSession_KhachHang" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_ProductSequence_SanPham" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_UserBehavior_SanPham" />
+        <EntityTypeShape EntityType="CuaHangMayTinh2Model.SanPhamGoiYTheoDanhGia" Width="1.5" PointX="5.25" PointY="16.375" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPhamGoiYTheoDanhGia_SanPhamGoc" />
+        <AssociationConnector Association="CuaHangMayTinh2Model.FK_SanPhamGoiYTheoDanhGia_SanPhamGoiY" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

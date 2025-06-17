@@ -1,0 +1,368 @@
+﻿@model IEnumerable<CuaHangMayTinh2.Models.SanPhamThuongMuaCung>
+@{
+    ViewBag.Title = "Sản phẩm thường mua cùng (Apriori)";
+    Layout = "~/Views/Shared/_LayoutPageAdmin.cshtml";
+}
+
+<style>
+    h2 {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--accent-cyan);
+        text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+        margin-bottom: 30px;
+    }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 221, 235, 0.5);
+        }
+
+    .btn-secondary {
+        background: var(--secondary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-secondary:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(138, 74, 243, 0.5);
+        }
+
+    .table {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--accent-purple);
+        color: var(--text-light);
+    }
+
+        .table th {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .table td {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+    .product-img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .product-name {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .product-id {
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    .metric-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .info-card {
+        background: rgba(0, 221, 235, 0.1);
+        border: 1px solid var(--accent-cyan);
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+        .info-card h4 {
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+        }
+
+        .info-card p {
+            margin-bottom: 0;
+        }
+
+    .run-apriori-btn {
+        margin-bottom: 20px;
+    }
+
+    /* Phân trang mới */
+    .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #2d3748;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .pagination-info {
+        font-size: 14px;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagination-item {
+        margin: 0 2px;
+    }
+
+    .pagination-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        background-color: #3a4556;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+        .pagination-link:hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .pagination-link.active {
+            background-color: #007bff;
+        }
+
+    .pagination-ellipsis {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        color: white;
+    }
+</style>
+
+<div class="container-fluid">
+    <h2>
+        <i class="fas fa-project-diagram"></i>
+        Sản phẩm thường mua cùng (Apriori)
+    </h2>
+
+    <div class="info-card">
+        <h4><i class="fas fa-info-circle"></i> Thông tin về thuật toán Apriori</h4>
+        <p>
+            Danh sách này hiển thị các sản phẩm thường được mua cùng nhau, được phân tích bằng thuật toán Apriori dựa trên dữ liệu đơn hàng.
+            Thuật toán Apriori giúp tìm ra các mối liên hệ giữa các sản phẩm dựa trên lịch sử mua hàng của khách hàng.
+        </p>
+    </div>
+
+    <a href="@Url.Action("RunApriori", "Admin")" class="btn btn-primary run-apriori-btn">
+        <i class="fas fa-play"></i> Chạy lại thuật toán Apriori
+    </a>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width: 35%">Sản phẩm 1</th>
+                    <th style="width: 35%">Sản phẩm 2</th>
+                    <th style="width: 30%">Số lần mua cùng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                @{
+                                    string hinhAnh1 = "/images/products/default.jpg";
+                                    var hinhAnhList1 = item.SanPham.HinhAnhSanPham.ToList();
+                                    foreach (var hinhAnh in hinhAnhList1)
+                                    {
+                                        if (hinhAnh.LaHinhChinh.HasValue && hinhAnh.LaHinhChinh.Value == true)
+                                        {
+                                            hinhAnh1 = hinhAnh.DuongDanAnh;
+                                            break;
+                                        }
+                                    }
+                                }
+                                <img src="@hinhAnh1" alt="@item.SanPham.TenSP" class="product-img" />
+                                <div>
+                                    <div class="product-name">@item.SanPham.TenSP</div>
+                                    <div class="product-id">ID: @item.SanPhamID1</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="product-info">
+                                @{
+                                    string hinhAnh2 = "/images/products/default.jpg";
+                                    var hinhAnhList2 = item.SanPham1.HinhAnhSanPham.ToList();
+                                    foreach (var hinhAnh in hinhAnhList2)
+                                    {
+                                        if (hinhAnh.LaHinhChinh.HasValue && hinhAnh.LaHinhChinh.Value == true)
+                                        {
+                                            hinhAnh2 = hinhAnh.DuongDanAnh;
+                                            break;
+                                        }
+                                    }
+                                }
+                                <img src="@hinhAnh2" alt="@item.SanPham1.TenSP" class="product-img" />
+                                <div>
+                                    <div class="product-name">@item.SanPham1.TenSP</div>
+                                    <div class="product-id">ID: @item.SanPhamID2</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary" style="font-size: 16px;">@item.SoLanMuaCung</span>
+                            <div style="margin-top: 10px;">
+                                <a href="@Url.Action("ViewSanPham", "Admin", new { id = item.SanPhamID1 })" class="btn btn-sm btn-info" target="_blank">
+                                    <i class="fas fa-eye"></i> Xem SP 1
+                                </a>
+                                <a href="@Url.Action("ViewSanPham", "Admin", new { id = item.SanPhamID2 })" class="btn btn-sm btn-info" target="_blank">
+                                    <i class="fas fa-eye"></i> Xem SP 2
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang mới -->
+    @if (ViewBag.TotalPages != null && (int)ViewBag.TotalPages > 0)
+    {
+        int currentPage = ViewBag.CurrentPage ?? 1;
+        int totalPages = (int)ViewBag.TotalPages;
+        int totalItems = ViewBag.TotalItems ?? 0;
+        int pageSize = ViewBag.PageSize ?? 10;
+        int startItem = (currentPage - 1) * pageSize + 1;
+        int endItem = Math.Min(currentPage * pageSize, totalItems);
+
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Đang xem @startItem đến @endItem trong tổng số @totalItems mục
+            </div>
+            <div>
+                <ul class="pagination">
+                    @if (currentPage > 1)
+                    {
+                        <li class="pagination-item">
+                            <a href="@Url.Action("SanPhamThuongMuaCung", new { page = currentPage - 1 })" class="pagination-link">Trước</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="pagination-item">
+                            <span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Trước</span>
+                        </li>
+                    }
+
+                    @{
+                        const int maxPagesToShow = 5;
+                        int startPage = Math.Max(1, currentPage - 2);
+                        int endPage = Math.Min(totalPages, startPage + maxPagesToShow - 1);
+
+                        if (endPage - startPage + 1 < maxPagesToShow)
+                        {
+                            startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+                        }
+
+                        // Hiển thị các trang đầu
+                        for (int i = startPage; i <= endPage; i++)
+                        {
+                            <li class="pagination-item">
+                                <a href="@Url.Action("SanPhamThuongMuaCung", new { page = i })"
+                                   class="pagination-link @(i == currentPage ? "active" : "")">@i</a>
+                            </li>
+                        }
+
+                        // Hiển thị dấu "..." nếu còn nhiều trang phía sau
+                        if (endPage < totalPages - 1)
+                        {
+                            <li class="pagination-item">
+                                <span class="pagination-ellipsis">...</span>
+                            </li>
+                        }
+
+                        // Hiển thị trang cuối cùng nếu không liền kề với các trang đã hiển thị
+                        if (endPage < totalPages)
+                        {
+                            <li class="pagination-item">
+                                <a href="@Url.Action("SanPhamThuongMuaCung", new { page = totalPages })"
+                                   class="pagination-link">@totalPages</a>
+                            </li>
+                        }
+                    }
+
+                    @if (currentPage < totalPages)
+                    {
+                        <li class="pagination-item">
+                            <a href="@Url.Action("SanPhamThuongMuaCung", new { page = currentPage + 1 })" class="pagination-link">Tiếp</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="pagination-item">
+                            <span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Tiếp</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Không có trang nào để hiển thị.</p>
+    }
+
+    <!-- Giải thích thuật toán Apriori -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <i class="fas fa-question-circle"></i> Giải thích thuật toán Apriori
+        </div>
+        <div class="card-body">
+            <p>Thuật toán Apriori là một thuật toán phổ biến trong khai phá dữ liệu để tìm ra các luật kết hợp giữa các sản phẩm dựa trên dữ liệu giao dịch. Thuật toán này giúp:</p>
+            <ul>
+                <li><strong>Tìm ra các sản phẩm thường được mua cùng nhau</strong> dựa trên lịch sử mua hàng của khách hàng.</li>
+                <li><strong>Phát hiện các mẫu mua sắm</strong> để cải thiện chiến lược tiếp thị và bố trí sản phẩm.</li>
+                <li><strong>Đề xuất sản phẩm liên quan</strong> cho khách hàng dựa trên sản phẩm họ đang xem hoặc đã thêm vào giỏ hàng.</li>
+            </ul>
+            <p>Số lần mua cùng thể hiện tần suất hai sản phẩm xuất hiện cùng nhau trong các đơn hàng, càng cao càng có mối liên hệ mạnh.</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - TechZone Admin</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome 6 for modern icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts: Orbitron và Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Trong phần head -->
+    <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+
+    <!-- Trước thẻ đóng body -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3c72, #2a5298);
+            --secondary-gradient: linear-gradient(135deg, #2a2a72, #4b0082);
+            --accent-purple: #8a4af3;
+            --accent-cyan: #00ddeb;
+            --accent-orange: #ff6f61;
+            --text-light: #d1d8e0;
+            --text-dark: #a3bffa;
+            --bg-dark: #0d1b2a;
+            --bg-content: rgba(27, 38, 59, 0.9);
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1465101162946-4377e57745c3?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 260px;
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            padding-top: 30px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+            .sidebar .logo {
+                font-family: 'Orbitron', sans-serif;
+                font-size: 28px;
+                font-weight: 700;
+                text-align: center;
+                padding: 20px 0;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+                background: var(--secondary-gradient);
+            }
+
+                .sidebar .logo a {
+                    color: var(--text-light);
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+                }
+
+                    .sidebar .logo a:hover {
+                        color: var(--accent-cyan);
+                    }
+
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+                margin-top: 30px;
+            }
+
+                .sidebar ul li {
+                    padding: 12px 20px;
+                    transition: all 0.3s ease;
+                }
+
+                    .sidebar ul li a {
+                        color: var(--text-light);
+                        text-decoration: none;
+                        display: flex;
+                        align-items: center;
+                        font-size: 16px;
+                        font-weight: 400;
+                        transition: all 0.3s ease;
+                    }
+
+                        .sidebar ul li a i {
+                            margin-right: 15px;
+                            font-size: 20px;
+                            transition: color 0.3s ease;
+                        }
+
+                    .sidebar ul li:hover {
+                        background: rgba(255, 255, 255, 0.05);
+                        border-radius: 8px;
+                    }
+
+                        .sidebar ul li:hover a {
+                            color: var(--accent-cyan);
+                        }
+
+                            .sidebar ul li:hover a i {
+                                color: var(--accent-purple);
+                            }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 30px;
+            min-height: 100vh;
+            background: var(--bg-content);
+            transition: margin-left 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .navbar {
+            background: var(--bg-dark);
+            box-shadow: var(--shadow);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+            .navbar .navbar-brand {
+                font-family: 'Orbitron', sans-serif;
+                font-size: 22px;
+                font-weight: 600;
+                color: var(--secondary-gradient);
+                background: linear-gradient(90deg, #2a5298, #00ddeb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .navbar .user-info {
+                display: flex;
+                align-items: center;
+            }
+
+                .navbar .user-info span {
+                    margin-right: 20px;
+                    font-weight: 500;
+                    color: var(--text-light);
+                }
+
+                .navbar .user-info a {
+                    color: var(--accent-orange);
+                    font-weight: 600;
+                    text-decoration: none;
+                    padding: 8px 15px;
+                    border: 2px solid var(--accent-orange);
+                    border-radius: 20px;
+                    transition: all 0.3s ease;
+                }
+
+                    .navbar .user-info a:hover {
+                        background: var(--accent-orange);
+                        color: #fff;
+                        text-decoration: none;
+                    }
+
+        .footer {
+            background: var(--bg-dark);
+            padding: 15px 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-left: 260px;
+            color: var(--text-dark);
+            font-size: 14px;
+            transition: margin-left 0.3s ease;
+        }
+
+        media (max-width: 768px) {
+            .sidebar
+
+        {
+            width: 70px;
+        }
+
+        .sidebar .logo {
+            font-size: 20px;
+        }
+
+        .sidebar ul li a {
+            justify-content: center;
+        }
+
+            .sidebar ul li a span {
+                display: none;
+            }
+
+        .main-content {
+            margin-left: 70px;
+        }
+
+        .footer {
+            margin-left: 70px;
+        }
+
+        .navbar {
+            padding: 10px 15px;
+        }
+
+        }
+
+        keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Table styling */
+        .table {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+            .table th, .table td {
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .table th {
+                background: var(--primary-gradient);
+                color: var(--text-light);
+            }
+
+            .table tr:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+        /* Button styling */
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background: var(--accent-cyan);
+            }
+
+        .btn-danger {
+            background: var(--accent-orange);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+            .btn-danger:hover {
+                background: #e65b50;
+            }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #34c759);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+            .btn-success:hover {
+                background: #218838;
+            }
+
+        /* Card styling */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-light);
+        }
+
+        .card-header {
+            background: var(--primary-gradient);
+            color: var(--text-light);
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <a href="@Url.Action("Index", "Admin")">TechZone Admin</a>
+        </div>
+        <ul>
+            <li>
+                <a href="@Url.Action("Index", "Admin")">
+                    <i class="fas fa-house"></i>
+                    <span>Trang chủ</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("DanhMuc", "Admin")">
+                    <i class="fas fa-list-check"></i>
+                    <span>Quản lý danh mục</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("SanPham", "Admin")">
+                    <i class="fas fa-laptop"></i>
+                    <span>Quản lý sản phẩm</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("DonHang", "Admin")">
+                    <i class="fas fa-cart-shopping"></i>
+                    <span>Quản lý đơn hàng</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("KhachHang", "Admin")">
+                    <i class="fas fa-users"></i>
+                    <span>Quản lý khách hàng</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("DanhGia", "Admin")">
+                    <i class="fas fa-star"></i>
+                    <span>Quản lý đánh giá</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("KhuyenMai", "Admin")">
+                    <i class="fas fa-tags"></i>
+                    <span>Quản lý khuyến mãi</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("SanPhamLienQuan", "Admin")">
+                    <i class="fas fa-link"></i>
+                    <span>Sản phẩm liên quan</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("SanPhamThuongMuaCung", "Admin")">
+                    <i class="fas fa-boxes-stacked"></i>
+                    <span>Thường mua cùng</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("RunApriori", "Admin")">
+                    <i class="fas fa-cogs"></i>
+                    <span>Apriori Gợi Ý Sản Phẩm Mua Cùng</span>
+                </a>
+            </li>
+            <li>
+                <a href="@Url.Action("SanPhamGoiYTheoDanhGia", "Admin")">
+                    <i class="fas fa-cogs"></i>
+                    <span>Apriori Gợi Ý Sản Phẩm Đánh Giá</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <span class="navbar-brand">Bảng điều khiển</span>
+            <div class="user-info">
+                <span>Xin chào, @(Session["AdminName"] != null ? Session["AdminName"].ToString() : "Admin")</span>
+                <a href="@Url.Action("Logout", "Admin")">Đăng xuất</a>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="content mt-4">
+            @RenderBody()
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© @DateTime.Now.Year TechZone Admin - All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

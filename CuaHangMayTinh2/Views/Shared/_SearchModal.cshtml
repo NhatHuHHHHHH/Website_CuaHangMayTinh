@@ -1,0 +1,538 @@
+﻿@* Modal Tìm kiếm *@
+<div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+        <div class="search-header">
+            <div class="search-input-container">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="searchModalInput" class="search-input" placeholder="Bạn cần tìm gì?">
+                <button type="button" class="close-button" id="closeSearchModal">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div class="search-body">
+            <div class="search-trending" id="searchTrending">
+                <h5 class="search-section-title">Xu hướng tìm kiếm <span class="trending-icon">🔥</span></h5>
+                <div class="search-trending-grid" id="trendingProducts">
+                    <!-- Xu hướng tìm kiếm sẽ được thêm vào đây bằng JavaScript -->
+                    <div class="search-loading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Đang tải...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-results" id="searchModalResults" style="display: none;">
+                <h5 class="search-section-title">Kết quả tìm kiếm</h5>
+                <div class="search-results-list" id="resultsList">
+                    <!-- Kết quả tìm kiếm sẽ được thêm vào đây bằng JavaScript -->
+                </div>
+            </div>
+            <div class="search-no-results" id="noResults" style="display: none;">
+                <div class="text-center py-4">
+                    <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
+                    <p class="mt-3">Không tìm thấy sản phẩm phù hợp</p>
+                </div>
+            </div>
+        </div>
+        <div class="search-footer">
+            <p class="search-tip">Nhấn Enter để xem tất cả kết quả</p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Styles for Search Modal */
+.search-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.search-modal-content {
+    position: relative;
+    background-color: #fff;
+    width: 90%;
+    max-width: 800px;
+    margin: 50px auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modalFadeIn 0.3s ease;
+}
+
+keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 15px 12px 40px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: #cd1818;
+    box-shadow: 0 0 0 0.2rem rgba(205, 24, 24, 0.25);
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    color: #777;
+    font-size: 18px;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 20px;
+    margin-left: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-button:hover {
+    color: #cd1818;
+    transform: scale(1.1);
+}
+
+.search-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.search-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.trending-icon {
+    margin-left: 8px;
+    font-size: 16px;
+}
+
+.search-trending-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.trending-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #333;
+}
+
+.trending-item:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.trending-item-image {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 3px;
+}
+
+.trending-item-text {
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-result-item {
+    margin-bottom: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-result-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.search-result-link {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+    padding: 10px;
+}
+
+.search-result-image {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.search-result-image img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.search-result-info {
+    flex: 1;
+}
+
+.search-result-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.search-result-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #cd1818;
+    margin-bottom: 5px;
+}
+
+.search-result-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #777;
+}
+
+.search-result-category {
+    background-color: #f1f1f1;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.search-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+}
+
+.search-footer {
+    padding: 10px 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.search-tip {
+    font-size: 14px;
+    color: #777;
+    margin: 0;
+}
+
+/* Responsive styles */
+media (max-width: 767.98px) {
+    .search-modal-content {
+        width: 95%;
+        margin: 30px auto;
+    }
+
+    .search-trending-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-result-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .search-result-title {
+        font-size: 14px;
+    }
+}
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Biến để lưu trữ timeout cho debounce
+        let searchTimeout;
+
+        // Hiển thị modal khi người dùng nhấp vào thanh tìm kiếm
+        $(".search-box .search-input, .search-icon").click(function(e) {
+            e.preventDefault();
+            $("#searchModal").fadeIn(300);
+            $("#searchModalInput").focus();
+
+            // Tải xu hướng tìm kiếm khi mở modal
+            loadTrendingSearches();
+        });
+
+        // Đóng modal khi nhấp vào nút đóng hoặc bên ngoài modal
+        $("#closeSearchModal, #searchModal").click(function(e) {
+            if (e.target === this) {
+                $("#searchModal").fadeOut(300);
+            }
+        });
+
+        // Ngăn sự kiện click trên nội dung modal lan ra ngoài
+        $(".search-modal-content").click(function(e) {
+            e.stopPropagation();
+        });
+
+        // Xử lý sự kiện khi người dùng nhập vào ô tìm kiếm
+        $("#searchModalInput").on("input", function() {
+            const query = $(this).val().trim();
+
+            // Xóa timeout cũ nếu có
+            clearTimeout(searchTimeout);
+
+            // Nếu ô tìm kiếm trống, hiển thị xu hướng tìm kiếm
+            if (query === "") {
+                $("#searchTrending").show();
+                $("#searchModalResults").hide();
+                $("#noResults").hide();
+                return;
+            }
+
+            // Thiết lập timeout mới để debounce (tránh gửi quá nhiều request)
+            searchTimeout = setTimeout(function() {
+                // Gửi request AJAX để lấy gợi ý tìm kiếm
+                $.ajax({
+                    url: "@Url.Action("TimKiemGoiY", "SanPham")",
+                    type: "GET",
+                    data: { tuKhoa: query },
+                    beforeSend: function() {
+                        // Hiển thị loading
+                        $("#resultsList").html(
+                            '<div class="search-loading"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Đang tải...</span></div></div>'
+                        );
+                        $("#searchTrending").hide();
+                        $("#searchModalResults").show();
+                        $("#noResults").hide();
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            const results = data.ketQua;
+
+                            if (results && results.length > 0) {
+                                // Hiển thị kết quả tìm kiếm
+                                displaySearchResults(results);
+                                $("#searchModalResults").show();
+                                $("#noResults").hide();
+                            } else {
+                                // Hiển thị thông báo không tìm thấy kết quả
+                                $("#searchModalResults").hide();
+                                $("#noResults").show();
+                            }
+
+                            $("#searchTrending").hide();
+                        } else {
+                            console.error("Lỗi khi tìm kiếm:", data.message);
+                            $("#searchModalResults").hide();
+                            $("#noResults").show();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Lỗi AJAX:", error);
+                        $("#searchModalResults").hide();
+                        $("#noResults").show();
+                    }
+                });
+            }, 300); // Đợi 300ms sau khi người dùng ngừng gõ
+        });
+
+        // Xử lý sự kiện khi người dùng nhấn Enter trong ô tìm kiếm
+        $("#searchModalInput").keypress(function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                const query = $(this).val().trim();
+
+                if (query !== "") {
+                    // Chuyển hướng đến trang kết quả tìm kiếm
+                    window.location.href = "@Url.Action("TimKiem", "SanPham")?tuKhoa=" + encodeURIComponent(query);
+                }
+            }
+        });
+
+        // Hàm tải xu hướng tìm kiếm
+        function loadTrendingSearches() {
+            $.ajax({
+                url: "@Url.Action("SanPhamHot", "SanPham")",
+                type: "GET",
+                beforeSend: function() {
+                    // Hiển thị loading
+                    $("#trendingProducts").html(
+                        '<div class="search-loading"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Đang tải...</span></div></div>'
+                    );
+                },
+                success: function(data) {
+                    if (data.success) {
+                        const products = data.sanPhamHot;
+
+                        if (products && products.length > 0) {
+                            // Hiển thị xu hướng tìm kiếm
+                            displayTrendingSearches(products);
+                        } else {
+                            // Nếu không có dữ liệu từ API, hiển thị dữ liệu mẫu
+                            displaySampleTrendingSearches();
+                        }
+                    } else {
+                        console.error("Lỗi khi tải xu hướng tìm kiếm:", data.message);
+                        // Hiển thị dữ liệu mẫu nếu có lỗi
+                        displaySampleTrendingSearches();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Lỗi AJAX:", error);
+                    // Hiển thị dữ liệu mẫu nếu có lỗi
+                    displaySampleTrendingSearches();
+                }
+            });
+        }
+
+        // Hàm hiển thị xu hướng tìm kiếm từ API
+        function displayTrendingSearches(products) {
+            let html = '';
+
+            products.forEach(function(product) {
+                html += `
+                    <a href="@Url.Action("ChiTiet", "SanPham")/${product.SanPhamID}" class="trending-item">
+                        <img src="${product.DuongDanAnh}" alt="${product.TenSP}" class="trending-item-image">
+                        <span class="trending-item-text">${product.TenSP}</span>
+                    </a>
+                `;
+            });
+
+            $("#trendingProducts").html(html);
+        }
+
+        // Hàm hiển thị dữ liệu mẫu cho xu hướng tìm kiếm
+        function displaySampleTrendingSearches() {
+            const sampleTrends = [
+                { name: "iPhone 16 Series", image: "/Images/trends/iphone16.jpg" },
+                { name: "S25 Ultra", image: "/Images/trends/s25ultra.jpg" },
+                { name: "OPPO Find N5", image: "/Images/trends/oppo-find-n5.jpg" },
+                { name: "XIAOMI 15", image: "/Images/trends/xiaomi15.jpg" },
+                { name: "Laptop AI", image: "/Images/trends/laptop-ai.jpg" },
+                { name: "iPad Air 11 M3", image: "/Images/trends/ipad-air.jpg" },
+                { name: "Samsung A26", image: "/Images/trends/samsung-a26.jpg" },
+                { name: "Ecovacs Deebot T80 Omni", image: "/Images/trends/ecovacs.jpg" },
+                { name: "JBL Charge 6", image: "/Images/trends/jbl-charge.jpg" },
+                { name: "Mac Studio M4 Max 2025", image: "/Images/trends/mac-studio.jpg" }
+            ];
+
+            let html = '';
+
+            sampleTrends.forEach(function(trend) {
+                html += `
+                    <a href="@Url.Action("TimKiem", "SanPham")?tuKhoa=${encodeURIComponent(trend.name)}" class="trending-item">
+                        <img src="${trend.image}" onerror="this.src='/Images/default-product.jpg'" alt="${trend.name}" class="trending-item-image">
+                        <span class="trending-item-text">${trend.name}</span>
+                    </a>
+                `;
+            });
+
+            $("#trendingProducts").html(html);
+        }
+
+        // Hàm hiển thị kết quả tìm kiếm
+        function displaySearchResults(results) {
+            let html = '';
+
+            results.forEach(function(result) {
+                html += `
+                    <div class="search-result-item">
+                        <a href="@Url.Action("ChiTiet", "SanPham")/${result.SanPhamID}" class="search-result-link">
+                            <div class="search-result-image">
+                                <img src="${result.DuongDanAnh}" alt="${result.TenSP}" class="img-fluid">
+                            </div>
+                            <div class="search-result-info">
+                                <h6 class="search-result-title">${result.TenSP}</h6>
+                                <p class="search-result-price">${formatCurrency(result.Gia)} VNĐ</p>
+                                <div class="search-result-meta">
+                                    <span class="search-result-category">${result.DanhMuc}</span>
+                                    <span class="search-result-rating">
+                                        ${generateStarRating(result.DanhGia)}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                `;
+            });
+
+            $("#resultsList").html(html);
+        }
+
+        // Hàm tạo HTML cho đánh giá sao
+        function generateStarRating(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) {
+                    stars += '<i class="bi bi-star-fill text-warning"></i>';
+                } else if (i === fullStars + 1 && hasHalfStar) {
+                    stars += '<i class="bi bi-star-half text-warning"></i>';
+                } else {
+                    stars += '<i class="bi bi-star text-warning"></i>';
+                }
+            }
+
+            return stars;
+        }
+
+        // Hàm định dạng tiền tệ
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount);
+        }
+    });
+</script>

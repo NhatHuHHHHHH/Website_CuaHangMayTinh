@@ -1,0 +1,199 @@
+﻿@model CuaHangMayTinh2.Models.KhachHang
+
+@{
+    ViewBag.Title = "Đăng ký - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4" style="font-family: 'Segoe UI', sans-serif; color: #2c3e50;">Đăng ký</h2>
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger text-center" role="alert">
+                            @ViewBag.Error
+                        </div>
+                    }
+                    <div id="termsError" class="alert alert-danger text-center d-none" role="alert">
+                        Vui lòng đồng ý với điều khoản dịch vụ để tiếp tục!
+                    </div>
+                    <div id="emailError" class="alert alert-danger text-center d-none" role="alert">
+                        Vui lòng sử dụng email Gmail (@@gmail.com) để đăng ký!
+                    </div>
+                    @using (Html.BeginForm("Register", "MayTinh", FormMethod.Post, new { @class = "needs-validation", novalidate = "", @id = "registerForm" }))
+                    {
+                        <div class="mb-3">
+                            <label for="TenKhachHang" class="form-label" style="color: #3498db;">Họ và tên</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-person-fill" style="color: #3498db;"></i></span>
+                                @Html.TextBoxFor(model => model.TenKhachHang, new { @class = "form-control", @id = "TenKhachHang", @placeholder = "Nhập họ và tên", @required = "required" })
+                                <div class="invalid-feedback">Vui lòng nhập họ và tên.</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label" style="color: #3498db;">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope-fill" style="color: #3498db;"></i></span>
+                                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @id = "email", @placeholder = "Nhập email của bạn", @required = "required", @type = "email" })
+                                <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="matKhau" class="form-label" style="color: #3498db;">Mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock-fill" style="color: #3498db;"></i></span>
+                                @Html.PasswordFor(model => model.MatKhau, new { @class = "form-control", @id = "matKhau", @placeholder = "Nhập mật khẩu", @required = "required" })
+                                <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="xacNhanMatKhau" class="form-label" style="color: #3498db;">Xác nhận mật khẩu</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock-fill" style="color: #3498db;"></i></span>
+                                <input type="password" class="form-control" id="xacNhanMatKhau" name="xacNhanMatKhau" placeholder="Nhập lại mật khẩu" required>
+                                <div class="invalid-feedback">Vui lòng nhập lại mật khẩu.</div>
+                            </div>
+                        </div>
+                        <!-- Checkbox "Đồng ý với điều khoản" -->
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" name="agreeTerms">
+                            <label class="form-check-label" for="agreeTerms" style="color: #2c3e50;">
+                                Tôi đồng ý với <a href="#" style="color: #3498db; text-decoration: none;">điều khoản dịch vụ</a>
+                            </label>
+                        </div>
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary" style="background-color: #3498db; border-color: #3498db; transition: all 0.3s ease;">Đăng ký</button>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="small">Đã có tài khoản? <a href="@Url.Action("Login", "MayTinh")" style="color: #e74c3c; font-weight: 500;">Đăng nhập ngay</a></p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+        transform: scale(1.02);
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .input-group-text {
+        border-radius: 0.375rem 0 0 0.375rem;
+    }
+
+    .social-login-options {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .social-login-link {
+        color: #2c3e50;
+        font-weight: 500;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+        .social-login-link:hover {
+            background-color: #e9ecef;
+            transform: scale(1.02);
+        }
+
+    .social-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .form-check-input:checked {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .alert {
+        margin-bottom: 15px;
+    }
+</style>
+
+<script>
+    @* Wrap JavaScript in a Razor code block to prevent Razor interpretation *@
+    @{
+        <text>
+        // Bootstrap form validation
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var form = document.getElementById('registerForm');
+                form.addEventListener('submit', function (event) {
+                    // Kiểm tra các trường required của Bootstrap
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+
+                    // Kiểm tra checkbox "Đồng ý với điều khoản"
+                    const agreeTerms = document.getElementById('agreeTerms');
+                    const termsError = document.getElementById('termsError');
+                    if (!agreeTerms.checked) {
+                        event.preventDefault();
+                        termsError.classList.remove('d-none');
+                        termsError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return; // Dừng kiểm tra tiếp nếu chưa đồng ý điều khoản
+                    }
+                    termsError.classList.add('d-none');
+
+                    // Kiểm tra email có phải là Gmail hay không
+                    const emailInput = document.getElementById('email');
+                    const emailError = document.getElementById('emailError');
+                    const emailValue = emailInput.value.trim().toLowerCase();
+                    const gmailDomain = "\x40gmail.com";
+                    if (!emailValue.endsWith(gmailDomain)) {
+                        event.preventDefault();
+                        emailError.classList.remove('d-none');
+                        emailError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        emailError.classList.add('d-none');
+                    }
+                }, false);
+            }, false);
+        })();
+
+        // Toggle social register options
+        document.getElementById('otherRegisterMethods').addEventListener('click', function (e) {
+            e.preventDefault();
+            const socialOptions = document.getElementById('socialRegisterOptions');
+            const chevron = this.querySelector('.bi-chevron-down');
+            socialOptions.classList.toggle('d-none');
+            chevron.classList.toggle('bi-chevron-down');
+            chevron.classList.toggle('bi-chevron-up');
+        });
+        </text>
+    }
+</script>

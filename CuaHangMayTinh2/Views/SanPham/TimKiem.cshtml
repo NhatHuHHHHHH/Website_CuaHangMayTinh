@@ -1,0 +1,354 @@
+﻿@model IEnumerable<CuaHangMayTinh2.Models.SanPham>
+
+@{
+    ViewBag.Title = "Kết quả tìm kiếm - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isLoggedIn = Session["KhachHangID"] != null;
+    var hinhAnhChinhDict = ViewBag.HinhAnhChinhDict as Dictionary<int, string> ?? new Dictionary<int, string>();
+}
+
+<div class="container py-5">
+    <!-- Kết quả tìm kiếm -->
+    <section class="mb-5">
+        <h2 class="section-title text-center mb-4" style="color: #2c3e50; font-family: 'Poppins', sans-serif;">
+            Kết quả tìm kiếm cho "<span>@ViewBag.TuKhoa</span>"
+        </h2>
+        @if (Model != null && Model.Any())
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 justify-content-center">
+                @foreach (var item in Model)
+                {
+                    var imageUrl = hinhAnhChinhDict.ContainsKey(item.SanPhamID) ? hinhAnhChinhDict[item.SanPhamID] : "/Images/default-product.jpg";
+                    <div class="col mb-4">
+                        <div class="card h-100 shadow-sm product-card position-relative">
+                            @if (item.DanhGia >= 4.5)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 start-0 m-2">Hot</span>
+                            }
+                            <div class="position-relative">
+                                @if (isLoggedIn)
+                                {
+                                    <a href="@Url.Action("Details", "MayTinh", new { id = item.SanPhamID })">
+                                        <img src="@Url.Content(imageUrl)"
+                                             class="card-img-top product-image"
+                                             alt="@item.TenSP"
+                                             onerror="this.src='/Images/default-product.jpg';">
+                                    </a>
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content(imageUrl)"
+                                         class="card-img-top product-image"
+                                         alt="@item.TenSP"
+                                         onerror="this.src='/Images/default-product.jpg';">
+                                }
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title product-title">
+                                    @if (isLoggedIn)
+                                    {
+                                        <a href="@Url.Action("Details", "MayTinh", new { id = item.SanPhamID })" class="text-decoration-none text-dark">
+                                            @item.TenSP
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-dark">@item.TenSP</span>
+                                    }
+                                </h5>
+                                <p class="card-text text-muted product-description">
+                                    @(string.IsNullOrEmpty(item.MoTa) ? "Không có mô tả" : item.MoTa.Length > 50 ? item.MoTa.Substring(0, 50) + "..." : item.MoTa)
+                                </p>
+                                <div class="price mb-2 text-danger fw-bold">@String.Format("{0:N0}", item.Gia) đ</div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="rating">
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        <span class="text-muted ms-1">@(item.DanhGia.HasValue ? item.DanhGia.Value.ToString("F1") : "0.0")</span>
+                                    </div>
+                                    <div class="views">
+                                        <i class="bi bi-eye-fill text-primary"></i>
+                                        <span class="text-muted ms-1">@(item.LuotXem ?? 0)</span>
+                                    </div>
+                                </div>
+                                <div class="mt-auto d-flex gap-2">
+                                    @if (isLoggedIn)
+                                    {
+                                        <a href="@Url.Action("Details", "MayTinh", new { id = item.SanPhamID })" class="btn btn-info text-white flex-fill">
+                                            <i class="bi bi-eye me-1"></i>Xem chi tiết
+                                        </a>
+                                        <button class="btn btn-primary flex-fill add-to-cart" data-id="@item.SanPhamID">
+                                            <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-danger small w-100 text-center">
+                                            Vui lòng <a href="@Url.Action("Login", "MayTinh")" class="text-primary">đăng nhập</a> để xem chi tiết hoặc thêm vào giỏ hàng.
+                                        </p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <p>Không tìm thấy sản phẩm nào phù hợp với từ khóa "@ViewBag.TuKhoa".</p>
+            </div>
+        }
+    </section>
+</div>
+
+<style>
+    @* Sử dụng cùng CSS như trong mẫu để đảm bảo giao diện nhất quán *@
+    import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .section-title {
+        position: relative;
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+    }
+
+    .section-title span {
+        background: linear-gradient(90deg, #3498db, #8e44ad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        padding: 0 10px;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: -10px;
+        width: 50px;
+        height: 4px;
+        background: linear-gradient(90deg, #3498db, #8e44ad);
+        transform: translateX(-50%);
+        border-radius: 2px;
+    }
+
+    .btn-custom {
+        transition: all 0.3s ease;
+        border-width: 2px;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .transition-hover {
+        transition: all 0.3s ease;
+    }
+
+    .transition-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #3498db, #2980b9);
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 0.5rem;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #2980b9, #1e6fa1);
+        color: white;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 0.5rem;
+    }
+
+    .btn-info:hover {
+        background-color: #138496;
+        color: white;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 0.5rem;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        color: white;
+    }
+
+    .product-card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.2);
+    }
+
+    .product-image {
+        height: 200px;
+        object-fit: contain;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        height: 2.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    .product-description {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-bottom: 0.75rem;
+        height: 2rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        flex-grow: 1;
+    }
+
+    .price {
+        font-size: 1.25rem;
+        color: #e74c3c;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+
+    .rating, .views {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .rating i {
+        color: #ffc107;
+        margin-right: 0.25rem;
+    }
+
+    .views i {
+        color: #3498db;
+        margin-right: 0.25rem;
+    }
+
+    .flex-fill {
+        flex: 1;
+    }
+
+    media (max-width: 767.98px) {
+        .section-title {
+            font-size: 1.75rem;
+        }
+
+        .product-image {
+            height: 150px;
+        }
+
+        .product-title {
+            font-size: 1rem;
+        }
+
+        .price {
+            font-size: 1.1rem;
+        }
+
+        .mt-auto.d-flex {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    media (min-width: 768px) and (max-width: 991.98px) {
+        .row-cols-lg-4 {
+            row-cols-md-3;
+        }
+    }
+</style>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Thêm vào giỏ hàng
+            $(document).on('click', '.add-to-cart', function (e) {
+                e.preventDefault();
+                var button = $(this);
+                var productId = button.data('id');
+                console.log("Add to cart clicked - ProductID:", productId);
+
+                $.ajax({
+                    url: '@Url.Action("AddToCart", "GioHang")',
+                    type: 'POST',
+                    data: { id: productId },
+                    success: function (response) {
+                        console.log("Add to cart response:", response);
+                        if (response.success) {
+                            button.addClass('btn-success').removeClass('btn-primary');
+                            button.html('<i class="bi bi-check-lg me-2"></i>Đã thêm');
+                            setTimeout(function (btn) {
+                                btn.removeClass('btn-success').addClass('btn-primary');
+                                btn.html('<i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ');
+                            }, 1500, button);
+                            var currentCount = parseInt($('.cart-badge').text()) || 0;
+                            $('.cart-badge').text(currentCount + 1);
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                            if (response.redirect) {
+                                window.location.href = response.redirect;
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX error:", xhr.responseText, status, error);
+                        alert("Đã xảy ra lỗi, vui lòng thử lại!");
+                    }
+                });
+            });
+        });
+    </script>
+}

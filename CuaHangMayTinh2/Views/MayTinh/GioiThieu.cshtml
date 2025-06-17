@@ -1,0 +1,304 @@
+﻿@{
+    ViewBag.Title = "Giới thiệu - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Font chữ độc đáo từ Google Fonts */
+    import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@400;700&display=swap');
+
+    /* Định nghĩa biến màu sắc phong cách galaxy */
+    :root {
+        --galaxy-dark: #0d1b2a;
+        --galaxy-blue: #1b263b;
+        --galaxy-purple: #3a0ca3;
+        --galaxy-cyan: #00ddeb;
+        --galaxy-orange: #ff6f61;
+        --galaxy-pink: #ff2e63;
+        --text-light: #e0e1dd;
+        --neon-glow: 0 0 10px rgba(0, 221, 235, 0.5);
+        --gradient-galaxy: linear-gradient(135deg, #1b263b, #3a0ca3);
+        --gradient-galaxy-hover: linear-gradient(135deg, #3a0ca3, #00ddeb);
+        --gradient-neon: linear-gradient(90deg, #00ddeb, #ff2e63);
+    }
+
+    /* Container chính */
+    .about-container {
+        position: relative;
+        padding: 60px 0;
+        color: var(--text-light);
+        background: var(--gradient-galaxy);
+        animation: fadeIn 1.5s ease-in-out;
+    }
+
+    /* Hiệu ứng fade-in */
+    keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tiêu đề chính */
+    .section-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: var(--gradient-neon);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: var(--neon-glow);
+        margin-bottom: 50px;
+        text-align: center;
+        position: relative;
+        animation: glow 2s infinite alternate, textWave 3s infinite;
+    }
+
+    /* Hiệu ứng glow cho tiêu đề */
+    keyframes glow {
+        0% { text-shadow: 0 0 10px rgba(0, 221, 235, 0.5), 0 0 20px rgba(255, 46, 99, 0.5); }
+        100% { text-shadow: 0 0 20px rgba(0, 221, 235, 0.8), 0 0 30px rgba(255, 46, 99, 0.8); }
+    }
+
+    /* Hiệu ứng sóng chữ cho tiêu đề */
+    keyframes textWave {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+
+    /* Thẻ giới thiệu */
+    .about-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 2px solid var(--galaxy-cyan);
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+        padding: 30px;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .about-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 25px rgba(0, 221, 235, 0.6);
+    }
+
+    .about-card h4 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.8rem;
+        color: var(--galaxy-blue);
+        margin-bottom: 20px;
+    }
+
+    .about-content {
+        font-family: 'Exo 2', sans-serif;
+        font-size: 1.2rem;
+        color: #34495e;
+        line-height: 1.8;
+    }
+
+    .about-image {
+        border-radius: 20px;
+        box-shadow: 0 0 15px rgba(0, 221, 235, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .about-image:hover {
+        transform: scale(1.05);
+    }
+
+    /* Giá trị cốt lõi */
+    .core-value {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .core-value i {
+        font-size: 3rem;
+        color: var(--galaxy-orange);
+        margin-bottom: 15px;
+    }
+
+    .core-value h5 {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--galaxy-blue);
+    }
+
+    .core-value p {
+        font-family: 'Exo 2', sans-serif;
+        font-size: 1.1rem;
+        color: #34495e;
+    }
+
+    /* Thành tựu */
+    .achievement {
+        text-align: center;
+        padding: 20px;
+        background: rgba(0, 221, 235, 0.1);
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+
+    .achievement h5 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2rem;
+        color: var(--galaxy-orange);
+    }
+
+    .achievement p {
+        font-family: 'Exo 2', sans-serif;
+        font-size: 1.2rem;
+        color: #34495e;
+    }
+
+    /* Nút kêu gọi hành động */
+    .cta-btn {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        padding: 12px 30px;
+        background: var(--gradient-neon);
+        border: none;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .cta-btn:hover {
+        background: var(--gradient-galaxy-hover);
+        box-shadow: 0 0 20px rgba(0, 221, 235, 0.8);
+        transform: scale(1.1);
+    }
+
+    /* Hiệu ứng ngôi sao nền */
+    .about-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+        opacity: 0.2;
+        z-index: -1;
+        animation: starfield 50s linear infinite;
+    }
+
+    keyframes starfield {
+        0% { background-position: 0 0; }
+        100% { background-position: 1000px 1000px; }
+    }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .section-title {
+            font-size: 2.5rem;
+        }
+
+        .about-card {
+            margin: 0 15px;
+        }
+    }
+</style>
+
+<div class="about-container container">
+    <!-- Lịch sử hình thành -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="about-card">
+                <h4 class="text-center">Lịch Sử Hình Thành</h4>
+                <div class="about-content">
+                    <p>TechZone được thành lập vào năm 2015 với mục tiêu mang công nghệ hiện đại đến gần hơn với người dùng Việt Nam. Từ một cửa hàng nhỏ tại TP.HCM, chúng tôi đã phát triển thành hệ thống bán lẻ đồ điện tử hàng đầu với hơn 10 chi nhánh trên toàn quốc.</p>
+                    <p>Trong suốt 10 năm qua, TechZone không ngừng đổi mới và cải tiến để đáp ứng nhu cầu ngày càng cao của khách hàng, từ việc cung cấp sản phẩm chính hãng đến dịch vụ hậu mãi tận tâm.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <img src="/images/about-history.png" alt="Lịch sử TechZone" class="img-fluid about-image">
+        </div>
+    </div>
+
+    <!-- Sứ mệnh và tầm nhìn -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="about-card">
+                <h4 class="text-center">Sứ Mệnh & Tầm Nhìn</h4>
+                <div class="about-content">
+                    <p><strong>Sứ mệnh:</strong> Mang đến cho khách hàng những sản phẩm công nghệ chất lượng cao, chính hãng với giá cả cạnh tranh nhất, cùng dịch vụ khách hàng xuất sắc.</p>
+                    <p><strong>Tầm nhìn:</strong> Trở thành hệ thống bán lẻ đồ điện tử hàng đầu tại Việt Nam, nơi khách hàng tin tưởng và trải nghiệm công nghệ hiện đại nhất.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="about-card">
+                <h4 class="text-center">Đội Ngũ Của Chúng Tôi</h4>
+                <div class="about-content">
+                    <p>Đội ngũ của TechZone bao gồm hơn 200 chuyên gia công nghệ, nhân viên bán hàng và kỹ thuật viên giàu kinh nghiệm. Chúng tôi luôn sẵn sàng hỗ trợ khách hàng 24/7, từ tư vấn sản phẩm đến giải quyết các vấn đề kỹ thuật.</p>
+                    <p>Chúng tôi không ngừng học hỏi và cập nhật xu hướng công nghệ mới để mang đến trải nghiệm tốt nhất cho khách hàng.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Giá trị cốt lõi -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="about-card">
+                <h4 class="text-center">Giá Trị Cốt Lõi</h4>
+                <div class="row">
+                    <div class="col-md-4 core-value">
+                        <i class="bi bi-shield-check"></i>
+                        <h5>Chất Lượng</h5>
+                        <p>Cam kết cung cấp sản phẩm chính hãng, chất lượng cao từ các thương hiệu hàng đầu.</p>
+                    </div>
+                    <div class="col-md-4 core-value">
+                        <i class="bi bi-heart-fill"></i>
+                        <h5>Tận Tâm</h5>
+                        <p>Đặt khách hàng làm trung tâm, luôn lắng nghe và hỗ trợ tận tình.</p>
+                    </div>
+                    <div class="col-md-4 core-value">
+                        <i class="bi bi-rocket-takeoff-fill"></i>
+                        <h5>Đổi Mới</h5>
+                        <p>Liên tục cập nhật công nghệ mới để mang đến trải nghiệm hiện đại nhất.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thành tựu -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="about-card">
+                <h4 class="text-center">Thành Tựu Nổi Bật</h4>
+                <div class="row">
+                    <div class="col-md-4 achievement">
+                        <h5>10+</h5>
+                        <p>Chi nhánh trên toàn quốc</p>
+                    </div>
+                    <div class="col-md-4 achievement">
+                        <h5>500,000+</h5>
+                        <p>Khách hàng tin tưởng</p>
+                    </div>
+                    <div class="col-md-4 achievement">
+                        <h5>1,000,000+</h5>
+                        <p>Sản phẩm đã bán ra</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kêu gọi hành động -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <div class="about-card">
+                <h4 class="text-center">Hãy Cùng Chúng Tôi Khám Phá Công Nghệ!</h4>
+                <p class="about-content text-center">Tham gia cộng đồng TechZone để nhận ưu đãi đặc biệt và cập nhật những xu hướng công nghệ mới nhất.</p>
+                <a href="@Url.Action("Register", "MayTinh")" class="cta-btn">Đăng Ký Ngay</a>
+            </div>
+        </div>
+    </div>
+</div>

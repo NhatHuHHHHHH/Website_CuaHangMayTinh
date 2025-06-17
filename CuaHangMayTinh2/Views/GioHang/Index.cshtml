@@ -1,0 +1,441 @@
+﻿@using CuaHangMayTinh2.Models
+
+@model List<CuaHangMayTinh2.Models.GioHang>
+
+@{
+    ViewBag.Title = "Giỏ hàng - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Font chữ đơn giản từ Google Fonts */
+    @@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+    /* Định nghĩa màu sắc tối giản */
+    :root {
+        --primary-color: #007bff; /* Màu xanh chính */
+        --secondary-color: #6c757d; /* Màu xám phụ */
+        --background-color: #f8f9fa; /* Màu nền sáng */
+        --text-color: #333; /* Màu chữ chính */
+        --border-color: #dee2e6; /* Màu viền */
+        --success-color: #28a745; /* Màu xanh thành công */
+        --danger-color: #dc3545; /* Màu đỏ lỗi */
+    }
+
+    /* Container chính */
+    .cart-container {
+        padding: 30px 0;
+        background-color: var(--background-color);
+        font-family: 'Roboto', sans-serif;
+        color: var(--text-color);
+    }
+
+    /* Tiêu đề chính */
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    /* Thông báo */
+    .alert {
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        max-width: 600px;
+        margin: 0 auto 20px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid var(--success-color);
+        color: var(--success-color);
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border: 1px solid var(--danger-color);
+        color: var(--danger-color);
+    }
+
+    /* Trường hợp giỏ hàng trống */
+    .empty-cart {
+        text-align: center;
+        padding: 40px 0;
+    }
+
+        .empty-cart p {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+    .btn-shop-now {
+        background-color: var(--primary-color);
+        border: none;
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-shop-now:hover {
+            background-color: #0056b3;
+        }
+
+    /* Bảng giỏ hàng */
+    .cart-table {
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+        .cart-table thead {
+            background-color: #f1f3f5;
+        }
+
+        .cart-table th {
+            font-weight: 700;
+            color: var(--text-color);
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cart-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+            .cart-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .cart-table td {
+            font-weight: 500;
+            color: var(--text-color);
+            padding: 12px;
+            vertical-align: middle;
+        }
+
+        .cart-table .product-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .cart-table .product-info img {
+                width: 50px;
+                height: 50px;
+                object-fit: cover;
+                border-radius: 5px;
+                border: 1px solid var(--border-color);
+            }
+
+            .cart-table .product-info span {
+                font-size: 1rem;
+                font-weight: 500;
+            }
+
+        .cart-table .price,
+        .cart-table .item-total,
+        .cart-table #totalPrice {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .cart-table .quantity-input {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            width: 70px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+            .cart-table .quantity-input:focus {
+                border-color: var(--primary-color);
+                outline: none;
+            }
+
+        .cart-table .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cart-table .btn {
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 5px;
+            padding: 6px 12px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Nút Xem chi tiết */
+        .cart-table .btn-info {
+            background-color: var(--secondary-color);
+            border: none;
+            color: #fff;
+        }
+
+            .cart-table .btn-info:hover {
+                background-color: #5a6268;
+            }
+
+        /* Nút Xóa */
+        .cart-table .btn-danger {
+            background-color: var(--danger-color);
+            border: none;
+            color: #fff;
+        }
+
+            .cart-table .btn-danger:hover {
+                background-color: #c82333;
+            }
+
+        /* Tổng cộng */
+        .cart-table tfoot {
+            background-color: #f1f3f5;
+        }
+
+            .cart-table tfoot td {
+                font-weight: 700;
+                color: var(--text-color);
+            }
+
+    /* Nút hành động dưới bảng */
+    .cart-actions {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+        .cart-actions .btn {
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .cart-actions .btn-outline-primary {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+            .cart-actions .btn-outline-primary:hover {
+                background-color: var(--primary-color);
+                color: #fff;
+            }
+
+        .cart-actions .btn-success {
+            background-color: var(--success-color);
+            border: none;
+            color: #fff;
+        }
+
+            .cart-actions .btn-success:hover {
+                background-color: #218838;
+            }
+</style>
+
+<div class="cart-container container">
+    <h2 class="section-title">
+        Giỏ hàng của bạn
+    </h2>
+
+    <!-- Hiển thị thông báo thành công -->
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Hiển thị thông báo lỗi -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Trường hợp giỏ hàng trống -->
+    @if (Model == null || !Model.Any())
+    {
+        <div class="empty-cart">
+            <p>Giỏ hàng của bạn trống.</p>
+            <a href="@Url.Action("Index", "MayTinh")" class="btn btn-shop-now">
+                <i class="bi bi-cart-plus me-2"></i>Mua sắm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="cart-table table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-giohangid="@item.GioHangID" data-price="@(item.SanPham != null ? item.SanPham.Gia : 0)">
+                            <td>
+                                <div class="product-info">
+                                    <img src="@(item.SanPham != null && item.SanPham.HinhAnhSanPham != null ? CuaHangMayTinh2.Helpers.ImageHelper.GetImagePath(item.SanPham.HinhAnhSanPham) : "/images/default.jpg")"
+                                         alt="@(item.SanPham != null ? item.SanPham.TenSP : "Không có tên")">
+                                    <span>@(item.SanPham != null ? item.SanPham.TenSP : "Không có sản phẩm")</span>
+                                </div>
+                            </td>
+                            <td class="price">@(item.SanPham != null ? String.Format("{0:N0}", item.SanPham.Gia) : "0") đ</td>
+                            <td>
+                                <input type="number" class="quantity-input"
+                                       value="@item.SoLuong"
+                                       min="1"
+                                       max="@(item.SanPham != null ? item.SanPham.SoLuongKho : 100)"
+                                       data-giohangid="@item.GioHangID">
+                            </td>
+                            <td class="item-total">@(item.SanPham != null ? String.Format("{0:N0}", item.SanPham.Gia * item.SoLuong) : "0") đ</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="@Url.Action("Details", "MayTinh", new { id = item.SanPhamID })" class="btn btn-info">
+                                        <i class="bi bi-eye me-1"></i>Xem chi tiết
+                                    </a>
+                                    <form action="@Url.Action("RemoveItemFromCart", "GioHang")" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?');">
+                                        <input type="hidden" name="gioHangId" value="@item.GioHangID" />
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash-fill me-1"></i>Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end">Tổng cộng:</td>
+                        <td id="totalPrice">@String.Format("{0:N0}", Model.Sum(gh => gh.SanPham != null ? (gh.SanPham.Gia * gh.SoLuong) : 0)) đ</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="cart-actions">
+            <a href="@Url.Action("Index", "MayTinh")" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+            </a>
+            <a href="@Url.Action("CheckoutForm", "GioHang")" class="btn btn-success">
+                <i class="bi bi-check-circle me-2"></i>Thanh toán
+            </a>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            console.log("Script loaded");
+
+            // Cập nhật số lượng
+            $(".quantity-input").on("change", function () {
+                console.log("Quantity changed");
+                var $input = $(this);
+                var gioHangId = $input.data("giohangid");
+                var soLuong = parseInt($input.val());
+                var maxQuantity = parseInt($input.attr("max"));
+                var $row = $input.closest("tr");
+                var donGia = parseFloat($row.data("price"));
+
+                // Kiểm tra giới hạn số lượng
+                if (soLuong > maxQuantity) {
+                    alert(`Số lượng vượt quá số lượng trong kho! Chỉ còn ${maxQuantity} sản phẩm.`);
+                    $input.val(maxQuantity);
+                    soLuong = maxQuantity;
+                } else if (soLuong < 1) {
+                    alert("Số lượng phải lớn hơn 0!");
+                    $input.val(1);
+                    soLuong = 1;
+                }
+
+                // Cập nhật thành tiền cho dòng hiện tại
+                var thanhTien = donGia * soLuong;
+                $row.find(".item-total").text(thanhTien.toLocaleString('vi-VN') + " đ");
+
+                // Cập nhật tổng tiền
+                updateTotalPrice();
+
+                // Gửi AJAX để cập nhật số lượng
+                $.ajax({
+                    url: '@Url.Action("UpdateCart", "GioHang")',
+                    type: 'POST',
+                    data: {
+                        gioHangId: gioHangId,
+                        soLuong: soLuong,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log("Update response:", response);
+                        if (response.success) {
+                            var currentCount = parseInt($('.cart-badge').text()) || 0;
+                            $('.cart-badge').text(response.totalItems || currentCount);
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                            if (response.redirect) {
+                                window.location.href = response.redirect;
+                            } else {
+                                location.reload();
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX error during update:", xhr.responseText, status, error);
+                        alert("Đã xảy ra lỗi, vui lòng thử lại sau!");
+                        location.reload();
+                    }
+                });
+            });
+
+            // Hàm tính và cập nhật tổng tiền
+            function updateTotalPrice() {
+                var total = 0;
+                $("tbody tr").each(function () {
+                    var donGia = parseFloat($(this).data("price"));
+                    var soLuong = parseInt($(this).find(".quantity-input").val());
+                    var thanhTien = donGia * soLuong;
+                    total += thanhTien;
+                });
+                $("#totalPrice").text(total.toLocaleString('vi-VN') + " đ");
+            }
+        });
+    </script>
+}

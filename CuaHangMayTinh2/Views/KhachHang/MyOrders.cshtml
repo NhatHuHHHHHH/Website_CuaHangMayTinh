@@ -1,0 +1,194 @@
+﻿@model List<CuaHangMayTinh2.Models.DonHang>
+
+@{
+    ViewBag.Title = "Đơn hàng của tôi - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Font chữ từ Google Fonts */
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    /* Định nghĩa màu sắc */
+    :root {
+        --primary-color: #2c3e50; /* Xanh đậm */
+        --accent-color: #f39c12; /* Vàng cam */
+        --background-color: #f5f7fa; /* Nền sáng */
+        --text-color: #333; /* Màu chữ */
+        --border-color: #e0e0e0; /* Màu viền */
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    }
+
+    /* Container chính */
+    .orders-container {
+        padding: 40px 0;
+        background-color: var(--background-color);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-color);
+    }
+
+    /* Tiêu đề chính */
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+    }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-color);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+    /* Bảng đơn hàng */
+    .orders-table {
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+        .orders-table thead {
+            background-color: var(--primary-color);
+        }
+
+        .orders-table th {
+            font-weight: 600;
+            color: #fff;
+            padding: 15px;
+            border-bottom: none;
+        }
+
+        .orders-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+            .orders-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .orders-table td {
+            font-weight: 500;
+            color: var(--text-color);
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .orders-table .total {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+    /* Trạng thái đơn hàng */
+    .status-pending {
+        color: #e67e22;
+        font-weight: 600;
+    }
+
+    .status-completed {
+        color: #27ae60;
+        font-weight: 600;
+    }
+
+    /* Nút xem chi tiết */
+    .btn-details {
+        background-color: var(--primary-color);
+        border: none;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #fff;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-details:hover {
+            background-color: #34495e;
+        }
+
+    /* Thông báo không có đơn hàng */
+    .no-orders {
+        text-align: center;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        font-size: 1.1rem;
+        color: var(--text-color);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-details {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<div class="orders-container container">
+    <h2 class="section-title">Đơn hàng của tôi</h2>
+
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="orders-table table">
+                <thead>
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Ngày đặt hàng</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var donHang in Model)
+                    {
+                        <tr>
+                            <td>@donHang.MaDonHang</td>
+                            <td>@(donHang.NgayDatHang.HasValue ? donHang.NgayDatHang.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</td>
+                            <td class="total">@(donHang.TongTien.HasValue ? String.Format("{0:N0}", donHang.TongTien.Value) : "0") VNĐ</td>
+                            <td class="@(donHang.TrangThaiDonHang == "Pending" ? "status-pending" : "status-completed")">@donHang.TrangThaiDonHang</td>
+                            <td>
+                                <a href="@Url.Action("PurchaseSuccess", "DonHang", new { donHangId = donHang.DonHangID })" class="btn btn-details">
+                                    <i class="bi bi-eye me-1"></i>Xem chi tiết
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="no-orders">
+            <p>Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+            <a href="@Url.Action("Index", "MayTinh")" class="btn btn-primary mt-3">
+                <i class="bi bi-cart-plus me-2"></i>Tiếp tục mua sắm
+            </a>
+        </div>
+    }
+</div>

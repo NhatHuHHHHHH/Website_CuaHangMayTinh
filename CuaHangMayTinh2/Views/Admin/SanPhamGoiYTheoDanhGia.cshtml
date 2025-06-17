@@ -1,0 +1,695 @@
+﻿@{
+    ViewBag.Title = "Gợi ý sản phẩm theo đánh giá";
+    Layout = "~/Views/Shared/_LayoutPageAdmin.cshtml";
+}
+
+<style>
+    /* Phân trang mới */
+    .pagination-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #2d3748;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
+
+    .pagination-info {
+        font-size: 14px;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .pagination-item {
+        margin: 0 2px;
+    }
+
+    .pagination-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        background-color: #3a4556;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+        .pagination-link:hover {
+            background-color: #4a5568;
+            color: white;
+        }
+
+        .pagination-link.active {
+            background-color: #007bff;
+        }
+
+    .pagination-ellipsis {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        color: white;
+    }
+
+    /* Thêm style cho rating stars */
+    .rating {
+        display: inline-flex;
+        margin-left: 5px;
+    }
+
+        .rating i {
+            font-size: 14px;
+            margin-right: 2px;
+        }
+</style>
+
+<div class="container-fluid">
+    <h2 class="mt-4 mb-4">Gợi ý sản phẩm theo đánh giá và mức độ phổ biến</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-cogs"></i> Tham số thuật toán
+        </div>
+        <div class="card-body">
+            <form id="recommendationForm">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="minSupport">Min Support:</label>
+                            <input type="number" id="minSupport" name="minSupport" class="form-control" value="0.001" min="0.001" max="1" step="0.001">
+                            <small class="form-text text-muted">Giá trị từ 0.001 đến 1</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="minConfidence">Min Confidence:</label>
+                            <input type="number" id="minConfidence" name="minConfidence" class="form-control" value="0.02" min="0.01" max="1" step="0.01">
+                            <small class="form-text text-muted">Giá trị từ 0.01 đến 1</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="minLift">Min Lift:</label>
+                            <input type="number" id="minLift" name="minLift" class="form-control" value="0.5" min="0" step="0.1">
+                            <small class="form-text text-muted">Giá trị từ 0 trở lên</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="minDanhGia">Min Đánh giá:</label>
+                            <input type="number" id="minDanhGia" name="minDanhGia" class="form-control" value="4.5" min="0" max="5" step="0.1">
+                            <small class="form-text text-muted">Giá trị từ 0 đến 5</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="minLuotXem">Min Lượt xem:</label>
+                            <input type="number" id="minLuotXem" name="minLuotXem" class="form-control" value="100" min="0" step="10">
+                            <small class="form-text text-muted">Giá trị từ 0 trở lên</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="categoryId">Danh mục:</label>
+                            @Html.DropDownList("categoryId", ViewBag.Categories as SelectList, "Tất cả danh mục", new { @class = "form-control" })
+                            <small class="form-text text-muted">Lọc theo danh mục</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <button type="button" id="btnFilterResults" class="btn btn-primary mr-2">
+                            <i class="fas fa-filter"></i> Lọc kết quả
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table"></i> Kết quả gợi ý sản phẩm
+        </div>
+        <div class="card-body">
+            <div id="loadingIndicator" style="display: none;">
+                <div class="text-center mb-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Đang xử lý...</span>
+                    </div>
+                </div>
+                <p id="progressInfo" class="text-center">Đang xử lý dữ liệu...</p>
+                <div class="progress mb-3">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 5%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100">5%</div>
+                </div>
+                <p class="text-center text-muted small">Quá trình này có thể mất vài phút tùy thuộc vào lượng dữ liệu</p>
+            </div>
+
+            <div id="resultsContainer">
+                @if (ViewBag.Results != null && ((System.Collections.ICollection)ViewBag.Results).Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="recommendationResultsTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm gốc</th>
+                                    <th>Sản phẩm gợi ý</th>
+                                    <th>Support</th>
+                                    <th>Confidence</th>
+                                    <th>Lift</th>
+                                    <th>Đánh giá</th>
+                                    <th>Lượt xem</th>
+                                    <th>Điểm phổ biến</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in ViewBag.Results)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@item.HinhAnhGoc" alt="@item.TenSPGoc" class="img-thumbnail mr-2" style="width: 50px; height: 50px;">
+                                                <span>@item.TenSPGoc</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@item.HinhAnhGoiY" alt="@item.TenSPGoiY" class="img-thumbnail mr-2" style="width: 50px; height: 50px;">
+                                                <span>@item.TenSPGoiY</span>
+                                            </div>
+                                        </td>
+                                        <td>@((item.Support * 100).ToString("F2"))%</td>
+                                        <td>@((item.Confidence * 100).ToString("F2"))%</td>
+                                        <td>@item.Lift.ToString("F2")</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <span>@item.DiemDanhGia.ToString("F1")</span>
+                                                <div class="rating">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        if (i <= Math.Floor(item.DiemDanhGia))
+                                                        {
+                                                            <i class="fas fa-star text-warning"></i>
+                                                        }
+                                                        else if (i - item.DiemDanhGia < 1 && i - item.DiemDanhGia > 0)
+                                                        {
+                                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="far fa-star text-warning"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@item.LuotXem</td>
+                                        <td>@item.DiemPhoBien.ToString("F2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Phân trang mới -->
+                    if (ViewBag.TotalPages != null && (int)ViewBag.TotalPages > 0)
+                    {
+                        int currentPage = ViewBag.CurrentPage ?? 1;
+                        int totalPages = (int)ViewBag.TotalPages;
+                        int totalItems = ViewBag.TotalItems ?? 0;
+                        int pageSize = ViewBag.PageSize ?? 10;
+                        int startItem = (currentPage - 1) * pageSize + 1;
+                        int endItem = Math.Min(currentPage * pageSize, totalItems);
+
+                        <div class="pagination-container">
+                            <div class="pagination-info">
+                                Đang xem @startItem đến @endItem trong tổng số @totalItems mục
+                            </div>
+                            <div>
+                                <ul class="pagination">
+                                    @if (currentPage > 1)
+                                    {
+                                        <li class="pagination-item">
+                                            <a href="@Url.Action("SanPhamGoiYTheoDanhGia", new { page = currentPage - 1 })" class="pagination-link">Trước</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="pagination-item">
+                                            <span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Trước</span>
+                                        </li>
+                                    }
+
+                                    @{
+                                        const int maxPagesToShow = 5;
+                                        int startPage = Math.Max(1, currentPage - 2);
+                                        int endPage = Math.Min(totalPages, startPage + maxPagesToShow - 1);
+
+                                        if (endPage - startPage + 1 < maxPagesToShow)
+                                        {
+                                            startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+                                        }
+
+                                        // Hiển thị các trang đầu
+                                        for (int i = startPage; i <= endPage; i++)
+                                        {
+                                            <li class="pagination-item">
+                                                <a href="@Url.Action("SanPhamGoiYTheoDanhGia", new { page = i })"
+                                                   class="pagination-link @(i == currentPage ? "active" : "")">@i</a>
+                                            </li>
+                                        }
+
+                                        // Hiển thị dấu "..." nếu còn nhiều trang phía sau
+                                        if (endPage < totalPages - 1)
+                                        {
+                                            <li class="pagination-item">
+                                                <span class="pagination-ellipsis">...</span>
+                                            </li>
+                                        }
+
+                                        // Hiển thị trang cuối cùng nếu không liền kề với các trang đã hiển thị
+                                        if (endPage < totalPages)
+                                        {
+                                            <li class="pagination-item">
+                                                <a href="@Url.Action("SanPhamGoiYTheoDanhGia", new { page = totalPages })"
+                                                   class="pagination-link">@totalPages</a>
+                                            </li>
+                                        }
+                                    }
+
+                                    @if (currentPage < totalPages)
+                                    {
+                                        <li class="pagination-item">
+                                            <a href="@Url.Action("SanPhamGoiYTheoDanhGia", new { page = currentPage + 1 })" class="pagination-link">Tiếp</a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li class="pagination-item">
+                                            <span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Tiếp</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p></p>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Chưa có kết quả. Vui lòng lọc kết quả hoặc cập nhật gợi ý.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo tooltip
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // Khởi tạo DataTable nếu có bảng kết quả
+            initializeDataTable();
+
+            // Xử lý sự kiện khi nhấn nút lọc kết quả
+            $("#btnFilterResults").click(function () {
+                filterRecommendationResults();
+            });
+
+            // Xử lý sự kiện khi nhấn nút cập nhật gợi ý
+            $("#btnUpdateRecommendations").click(function () {
+                updateRecommendations();
+            });
+
+            // Xử lý sự kiện khi nhấn nút xuất CSV
+            $("#btnExportCSV").click(function () {
+                exportToCSV();
+            });
+
+            // Xử lý sự kiện khi nhấn Enter trong form
+            $("#recommendationForm").on("keypress", function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    filterRecommendationResults();
+                }
+            });
+
+            // Hàm khởi tạo DataTable
+            function initializeDataTable() {
+                if ($("#recommendationResultsTable").length) {
+                    try {
+                        // Nếu DataTable đã tồn tại, hủy nó trước
+                        if ($.fn.DataTable.isDataTable("#recommendationResultsTable")) {
+                            $("#recommendationResultsTable").DataTable().destroy();
+                        }
+
+                        // Khởi tạo DataTable mới
+                        $("#recommendationResultsTable").DataTable({
+                            language: {
+                                url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Vietnamese.json"
+                            },
+                            order: [[7, "desc"]], // Sắp xếp theo điểm phổ biến giảm dần
+                            pageLength: 10,
+                            lengthMenu: [
+                                [10, 25, 50, -1],
+                                [10, 25, 50, "Tất cả"]
+                            ]
+                        });
+                    } catch (e) {
+                        console.error("Error initializing DataTable:", e);
+                    }
+                }
+            }
+
+            // Hàm lọc kết quả gợi ý
+            function filterRecommendationResults() {
+                // Lấy các tham số
+                var minSupport = parseFloat($("#minSupport").val());
+                var minConfidence = parseFloat($("#minConfidence").val());
+                var minLift = parseFloat($("#minLift").val());
+                var minDanhGia = parseFloat($("#minDanhGia").val());
+                var minLuotXem = parseInt($("#minLuotXem").val());
+                var categoryId = $("#categoryId").val();
+
+                // Kiểm tra tham số
+                if (isNaN(minSupport) || minSupport < 0 || minSupport > 1) {
+                    alert("Min Support phải là số từ 0 đến 1");
+                    return;
+                }
+
+                if (isNaN(minConfidence) || minConfidence < 0 || minConfidence > 1) {
+                    alert("Min Confidence phải là số từ 0 đến 1");
+                    return;
+                }
+
+                if (isNaN(minLift) || minLift < 0) {
+                    alert("Min Lift phải là số không âm");
+                    return;
+                }
+
+                if (isNaN(minDanhGia) || minDanhGia < 0 || minDanhGia > 5) {
+                    alert("Điểm đánh giá phải là số từ 0 đến 5");
+                    return;
+                }
+
+                if (isNaN(minLuotXem) || minLuotXem < 0) {
+                    alert("Lượt xem phải là số nguyên không âm");
+                    return;
+                }
+
+                // Hiển thị loading
+                $("#loadingIndicator").show();
+                $("#resultsContainer").hide();
+
+                // Gọi AJAX để lọc kết quả
+                $.ajax({
+                    url: '@Url.Action("FilterSanPhamGoiY", "Admin")',
+                    type: 'GET',
+                    data: {
+                        minDanhGia: minDanhGia,
+                        minLuotXem: minLuotXem,
+                        categoryId: categoryId,
+                        minSupport: minSupport,
+                        minConfidence: minConfidence,
+                        minLift: minLift
+                    },
+                    success: function (response) {
+                        // Ẩn loading
+                        $("#loadingIndicator").hide();
+                        $("#resultsContainer").show();
+
+                        if (response.success) {
+                            // Hiển thị kết quả
+                            displayResults(response.results);
+                        } else {
+                            // Hiển thị thông báo lỗi
+                            $("#resultsContainer").html(
+                                '<div class="alert alert-danger">' +
+                                '<i class="fas fa-exclamation-triangle"></i> ' + response.message +
+                                '</div>'
+                            );
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Ẩn loading
+                        $("#loadingIndicator").hide();
+                        $("#resultsContainer").show();
+
+                        // Hiển thị thông báo lỗi
+                        $("#resultsContainer").html(
+                            '<div class="alert alert-danger">' +
+                            '<i class="fas fa-exclamation-triangle"></i> Đã xảy ra lỗi khi lọc kết quả: ' + error +
+                            '</div>'
+                        );
+                    }
+                });
+            }
+
+            // Hàm cập nhật gợi ý
+            function updateRecommendations() {
+                // Lấy các tham số
+                var minSupport = parseFloat($("#minSupport").val());
+                var minConfidence = parseFloat($("#minConfidence").val());
+                var minLift = parseFloat($("#minLift").val());
+                var minDanhGia = parseFloat($("#minDanhGia").val());
+                var minLuotXem = parseInt($("#minLuotXem").val());
+
+                // Kiểm tra tham số
+                if (isNaN(minSupport) || minSupport < 0 || minSupport > 1) {
+                    alert("Min Support phải là số từ 0 đến 1");
+                    return;
+                }
+
+                if (isNaN(minConfidence) || minConfidence < 0 || minConfidence > 1) {
+                    alert("Min Confidence phải là số từ 0 đến 1");
+                    return;
+                }
+
+                if (isNaN(minLift) || minLift < 0) {
+                    alert("Min Lift phải là số không âm");
+                    return;
+                }
+
+                if (isNaN(minDanhGia) || minDanhGia < 0 || minDanhGia > 5) {
+                    alert("Điểm đánh giá phải là số từ 0 đến 5");
+                    return;
+                }
+
+                if (isNaN(minLuotXem) || minLuotXem < 0) {
+                    alert("Lượt xem phải là số nguyên không âm");
+                    return;
+                }
+
+                // Hiển thị loading
+                $("#loadingIndicator").show();
+                $("#progressInfo").text("Đang cập nhật gợi ý sản phẩm...");
+                $("#resultsContainer").hide();
+
+                // Gọi AJAX để cập nhật gợi ý
+                $.ajax({
+                    url: '@Url.Action("RunCapNhatGoiYTheoDanhGia", "Admin")',
+                    type: 'GET',
+                    data: {
+                        minSupport: minSupport,
+                        minConfidence: minConfidence,
+                        minLift: minLift,
+                        minDanhGia: minDanhGia,
+                        minLuotXem: minLuotXem,
+                        maxItemsetSize: 3
+                    },
+                    success: function (response) {
+                        // Ẩn loading
+                        $("#loadingIndicator").hide();
+                        $("#resultsContainer").show();
+
+                        if (response.success) {
+                            // Hiển thị thông báo thành công
+                            $("#resultsContainer").html(
+                                '<div class="alert alert-success">' +
+                                '<i class="fas fa-check-circle"></i> ' + response.message +
+                                '</div>'
+                            );
+
+                            // Tải lại trang sau 2 giây
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            // Hiển thị thông báo lỗi
+                            $("#resultsContainer").html(
+                                '<div class="alert alert-danger">' +
+                                '<i class="fas fa-exclamation-triangle"></i> ' + response.message +
+                                '</div>'
+                            );
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Ẩn loading
+                        $("#loadingIndicator").hide();
+                        $("#resultsContainer").show();
+
+                        // Hiển thị thông báo lỗi
+                        $("#resultsContainer").html(
+                            '<div class="alert alert-danger">' +
+                            '<i class="fas fa-exclamation-triangle"></i> Đã xảy ra lỗi khi cập nhật gợi ý: ' + error +
+                            '</div>'
+                        );
+                    }
+                });
+            }
+
+            // Hàm xuất CSV
+            function exportToCSV() {
+                var minDanhGia = parseFloat($("#minDanhGia").val());
+                var minLuotXem = parseInt($("#minLuotXem").val());
+                var categoryId = $("#categoryId").val();
+
+                // Tạo URL để xuất CSV
+                var url = '@Url.Action("ExportSanPhamGoiY", "Admin")' +
+                    '?minDanhGia=' + minDanhGia +
+                    '&minLuotXem=' + minLuotXem;
+
+                if (categoryId) {
+                    url += '&categoryId=' + categoryId;
+                }
+
+                // Mở URL trong tab mới
+                window.open(url, '_blank');
+            }
+
+            // Hàm hiển thị kết quả
+            function displayResults(results) {
+                if (results.length === 0) {
+                    $("#resultsContainer").html(
+                        '<div class="alert alert-info">' +
+                        '<i class="fas fa-info-circle"></i> Không tìm thấy kết quả nào thỏa mãn điều kiện.' +
+                        '</div>'
+                    );
+                    return;
+                }
+
+                var html = '<div class="table-responsive">' +
+                    '<table class="table table-bordered" id="recommendationResultsTable" width="100%" cellspacing="0">' +
+                    '<thead>' +
+                    '<tr>' +
+                    '<th>Sản phẩm gốc</th>' +
+                    '<th>Sản phẩm gợi ý</th>' +
+                    '<th>Support</th>' +
+                    '<th>Confidence</th>' +
+                    '<th>Lift</th>' +
+                    '<th>Đánh giá</th>' +
+                    '<th>Lượt xem</th>' +
+                    '<th>Điểm phổ biến</th>' +
+                    '</tr>' +
+                    '</thead>' +
+                    '<tbody>';
+
+                for (var i = 0; i < results.length; i++) {
+                    var item = results[i];
+
+                    // Tạo HTML cho rating stars
+                    var ratingHtml = '<div class="rating">';
+                    for (var j = 1; j <= 5; j++) {
+                        if (j <= Math.floor(item.DiemDanhGia)) {
+                            ratingHtml += '<i class="fas fa-star text-warning"></i>';
+                        } else if (j - item.DiemDanhGia < 1 && j - item.DiemDanhGia > 0) {
+                            ratingHtml += '<i class="fas fa-star-half-alt text-warning"></i>';
+                        } else {
+                            ratingHtml += '<i class="far fa-star text-warning"></i>';
+                        }
+                    }
+                    ratingHtml += '</div>';
+
+                    html += '<tr>' +
+                        '<td>' +
+                        '<div class="d-flex align-items-center">' +
+                        '<img src="' + item.HinhAnhGoc + '" alt="' + item.TenSPGoc + '" class="img-thumbnail mr-2" style="width: 50px; height: 50px;">' +
+                        '<span>' + item.TenSPGoc + '</span>' +
+                        '</div>' +
+                        '</td>' +
+                        '<td>' +
+                        '<div class="d-flex align-items-center">' +
+                        '<img src="' + item.HinhAnhGoiY + '" alt="' + item.TenSPGoiY + '" class="img-thumbnail mr-2" style="width: 50px; height: 50px;">' +
+                        '<span>' + item.TenSPGoiY + '</span>' +
+                        '</div>' +
+                        '</td>' +
+                        '<td>' + (item.Support * 100).toFixed(2) + '%</td>' +
+                        '<td>' + (item.Confidence * 100).toFixed(2) + '%</td>' +
+                        '<td>' + item.Lift.toFixed(2) + '</td>' +
+                        '<td><div class="d-flex align-items-center"><span>' + item.DiemDanhGia.toFixed(1) + '</span>' + ratingHtml + '</div></td>' +
+                        '<td>' + item.LuotXem + '</td>' +
+                        '<td>' + item.DiemPhoBien.toFixed(2) + '</td>' +
+                        '</tr>';
+                }
+
+                html += '</tbody></table></div>';
+
+                // Thêm phân trang
+                if (results.length > 10) {
+                    var totalItems = results.length;
+                    var pageSize = 10;
+                    var totalPages = Math.ceil(totalItems / pageSize);
+
+                    html += '<div class="pagination-container">' +
+                        '<div class="pagination-info">' +
+                        'Đang xem 1 đến ' + Math.min(pageSize, totalItems) + ' trong tổng số ' + totalItems + ' mục' +
+                        '</div>' +
+                        '<div>' +
+                        '<ul class="pagination">' +
+                        '<li class="pagination-item">' +
+                        '<span class="pagination-link" style="opacity: 0.5; cursor: not-allowed;">Trước</span>' +
+                        '</li>';
+
+                    // Hiển thị tối đa 5 trang
+                    var maxPagesToShow = Math.min(5, totalPages);
+                    for (var i = 1; i <= maxPagesToShow; i++) {
+                        html += '<li class="pagination-item">' +
+                            '<a href="#" class="pagination-link ' + (i === 1 ? 'active' : '') + '" data-page="' + i + '">' + i + '</a>' +
+                            '</li>';
+                    }
+
+                    // Hiển thị dấu "..." nếu còn nhiều trang
+                    if (totalPages > maxPagesToShow) {
+                        html += '<li class="pagination-item">' +
+                            '<span class="pagination-ellipsis">...</span>' +
+                            '</li>' +
+                            '<li class="pagination-item">' +
+                            '<a href="#" class="pagination-link" data-page="' + totalPages + '">' + totalPages + '</a>' +
+                            '</li>';
+                    }
+
+                    html += '<li class="pagination-item">' +
+                        '<a href="#" class="pagination-link" data-page="2">Tiếp</a>' +
+                        '</li>' +
+                        '</ul>' +
+                        '</div>' +
+                        '</div>';
+                }
+
+                $("#resultsContainer").html(html);
+
+                // Khởi tạo lại DataTable
+                initializeDataTable();
+            }
+        });
+    </script>
+}

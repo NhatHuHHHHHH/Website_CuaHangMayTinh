@@ -1,0 +1,115 @@
+﻿@model CuaHangMayTinh2.Models.KhuyenMai
+@{
+    ViewBag.Title = "CreateKhuyenMai";
+    Layout = "~/Views/Shared/_LayoutPageAdmin.cshtml";
+}
+
+<style>
+    h2 {
+        font-family: 'Orbitron', sans-serif;
+        color: var(--accent-cyan);
+        text-shadow: 0 0 10px rgba(0, 221, 235, 0.5);
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--accent-purple);
+        color: var(--text-light);
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 221, 235, 0.3);
+            color: var(--text-light);
+        }
+
+    .btn-primary {
+        background: var(--primary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 221, 235, 0.5);
+        }
+
+    .btn-secondary {
+        background: var(--secondary-gradient);
+        border: none;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-secondary:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(138, 74, 243, 0.5);
+        }
+
+    .text-danger {
+        color: var(--accent-orange);
+    }
+</style>
+
+<h2>Thêm khuyến mãi</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.KhuyenMaiID, "ID")
+        @Html.EditorFor(model => model.KhuyenMaiID, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.KhuyenMaiID, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TenKhuyenMai, "Tên khuyến mãi")
+        @Html.EditorFor(model => model.TenKhuyenMai, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.TenKhuyenMai, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.GiaTriGiam, "Giá trị giảm")
+        @Html.EditorFor(model => model.GiaTriGiam, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.GiaTriGiam, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TyLeGiam, "Tỷ lệ giảm")
+        @Html.EditorFor(model => model.TyLeGiam, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(model => model.TyLeGiam, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NgayBatDau, "Ngày bắt đầu")
+        @Html.EditorFor(model => model.NgayBatDau, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+        @Html.ValidationMessageFor(model => model.NgayBatDau, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NgayKetThuc, "Ngày kết thúc")
+        @Html.EditorFor(model => model.NgayKetThuc, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
+        @Html.ValidationMessageFor(model => model.NgayKetThuc, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm</button>
+    <a href="@Url.Action("KhuyenMai")" class="btn btn-secondary">Quay lại</a>
+}

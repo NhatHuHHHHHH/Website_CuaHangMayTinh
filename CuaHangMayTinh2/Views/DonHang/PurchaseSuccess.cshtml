@@ -1,0 +1,353 @@
+﻿@model CuaHangMayTinh2.Models.DonHang
+@using System.Linq
+
+@{
+    ViewBag.Title = "Thanh toán thành công - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Font chữ hiện đại từ Google Fonts */
+    @@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    /* Định nghĩa màu sắc */
+    :root {
+        --primary-color: #2c3e50; /* Xanh đậm làm màu chính */
+        --accent-color: #f39c12; /* Vàng cam làm điểm nhấn */
+        --success-color: #27ae60; /* Xanh lá cho thông báo thành công */
+        --background-color: #f5f7fa; /* Màu nền sáng */
+        --text-color: #333; /* Màu chữ chính */
+        --border-color: #e0e0e0; /* Màu viền */
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    }
+
+    /* Container chính */
+    .success-container {
+        padding: 40px 0;
+        background-color: var(--background-color);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text-color);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Tiêu đề chính */
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        text-align: center;
+        position: relative;
+    }
+
+        .section-title::after {
+            content: '';
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-color);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+    /* Tiêu đề phụ */
+    .sub-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        border-left: 4px solid var(--accent-color);
+        padding-left: 15px;
+    }
+
+    /* Thông báo thành công */
+    .alert {
+        padding: 15px 20px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 500;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        text-align: center;
+        background-color: #e7f3e9;
+        border: 1px solid var(--success-color);
+        color: var(--success-color);
+        box-shadow: var(--shadow);
+    }
+
+    /* Thông tin đơn hàng */
+    .order-info {
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+    }
+
+        .order-info p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .order-info p strong {
+                color: var(--primary-color);
+                width: 200px;
+            }
+
+            .order-info p span {
+                color: var(--text-color);
+                flex: 1;
+                text-align: right;
+            }
+
+    /* Bảng chi tiết đơn hàng */
+    .order-details-table {
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+    }
+
+        .order-details-table thead {
+            background-color: var(--primary-color);
+        }
+
+        .order-details-table th {
+            font-weight: 600;
+            color: #fff;
+            padding: 15px;
+            border-bottom: none;
+        }
+
+        .order-details-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+            .order-details-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .order-details-table td {
+            font-weight: 500;
+            color: var(--text-color);
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .order-details-table .price,
+        .order-details-table .item-total {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+    /* Nút tiếp tục mua sắm */
+    .continue-shopping {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+        .continue-shopping .btn {
+            background-color: var(--accent-color);
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+            .continue-shopping .btn:hover {
+                background-color: #e67e22;
+                transform: translateY(-2px);
+            }
+
+    /* Hiệu ứng hoa rơi */
+    .falling-flowers {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .flower {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: url('/images/flower.png') no-repeat center center;
+        background-size: contain;
+        opacity: 0.8;
+        animation: fall linear infinite;
+    }
+
+    @@keyframes fall {
+        0% {
+            transform: translateY(-100px) rotate(0deg);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .sub-title {
+            font-size: 1.4rem;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+            padding: 12px 15px;
+        }
+
+        .order-info {
+            padding: 20px;
+        }
+
+            .order-info p {
+                font-size: 0.9rem;
+                flex-direction: column;
+                text-align: left;
+            }
+
+                .order-info p strong,
+                .order-info p span {
+                    width: 100%;
+                    text-align: left;
+                }
+
+        .order-details-table th,
+        .order-details-table td {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .continue-shopping .btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<div class="success-container container">
+    <!-- Hiệu ứng hoa rơi -->
+    <div class="falling-flowers" id="fallingFlowers"></div>
+
+    <h2 class="section-title">Thanh Toán Thành Công</h2>
+    <div class="alert alert-success">
+        Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được ghi nhận.
+    </div>
+
+    <!-- Thông tin đơn hàng -->
+    <h3 class="sub-title">Thông tin đơn hàng</h3>
+    <div class="order-info">
+        <p><strong>Mã đơn hàng:</strong> <span>@Model.MaDonHang</span></p>
+        <p><strong>Ngày đặt hàng:</strong> <span>@(Model.NgayDatHang.HasValue ? Model.NgayDatHang.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</span></p>
+        <p><strong>Tổng tiền:</strong> <span>@(Model.TongTien.HasValue ? String.Format("{0:N0}", Model.TongTien.Value) : "0") VNĐ</span></p>
+        <p><strong>Trạng thái:</strong> <span>@Model.TrangThaiDonHang</span></p>
+        <p><strong>Phương thức thanh toán:</strong> <span>@Model.PhuongThucThanhToan</span></p>
+        <p><strong>Địa chỉ giao hàng:</strong> <span>@Model.DiaChiGiaoHang</span></p>
+    </div>
+
+    <!-- Chi tiết đơn hàng -->
+    <h3 class="sub-title">Chi tiết đơn hàng</h3>
+    <div class="table-responsive">
+        <table class="order-details-table table">
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Tổng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ChiTietDonHang)
+                {
+                    <tr>
+                        <td>@(item.SanPham != null ? item.SanPham.TenSP : "Không có sản phẩm")</td>
+                        <td class="price">@String.Format("{0:N0}", item.Gia) VNĐ</td>
+                        <td>@item.SoLuong</td>
+                        <td class="item-total">@String.Format("{0:N0}", (item.Gia * item.SoLuong)) VNĐ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Nút tiếp tục mua sắm -->
+    <div class="continue-shopping">
+        <a href="@Url.Action("Index", "MayTinh")" class="btn btn-primary">
+            <i class="bi bi-cart-plus me-2"></i>Tiếp tục mua sắm
+        </a>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Thư viện confetti cho hiệu ứng pháo hoa -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        // Hiệu ứng pháo hoa
+        document.addEventListener('DOMContentLoaded', function () {
+            // Tạo pháo hoa liên tục trong 5 giây
+            var duration = 5 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        });
+
+        // Hiệu ứng hoa rơi
+        function createFlower() {
+            const flower = document.createElement('div');
+            flower.classList.add('flower');
+            flower.style.left = Math.random() * 100 + 'vw';
+            flower.style.animationDuration = Math.random() * 5 + 5 + 's'; // Thời gian rơi từ 5-10s
+            flower.style.animationDelay = Math.random() * 5 + 's'; // Độ trễ ngẫu nhiên
+            document.getElementById('fallingFlowers').appendChild(flower);
+
+            // Xóa hoa sau khi rơi xong
+            setTimeout(() => {
+                flower.remove();
+        }, 10000);
+        }
+
+        // Tạo hoa rơi liên tục
+        setInterval(createFlower, 300); // Tạo hoa mới mỗi 300ms
+    </script>
+}

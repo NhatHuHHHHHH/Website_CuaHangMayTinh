@@ -1,0 +1,341 @@
+﻿@model CuaHangMayTinh2.Models.KhachHang
+
+@{
+    ViewBag.Title = "Thông tin tài khoản - TechZone";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Font chữ độc đáo từ Google Fonts */
+    import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+    /* Định nghĩa biến màu sắc phong cách galaxy */
+    :root {
+        --galaxy-dark: #0d1b2a; /* Màu nền tối */
+        --galaxy-blue: #1b263b; /* Xanh dương đậm */
+        --galaxy-purple: #3a0ca3; /* Tím vũ trụ */
+        --galaxy-cyan: #00ddeb; /* Cyan sáng */
+        --galaxy-orange: #ff6f61; /* Cam điểm nhấn */
+        --text-light: #e0e1dd; /* Màu chữ sáng */
+        --neon-glow: 0 0 10px rgba(0, 221, 235, 0.5); /* Ánh sáng neon */
+        --gradient-galaxy: linear-gradient(135deg, #1b263b, #3a0ca3); /* Gradient galaxy */
+        --gradient-galaxy-hover: linear-gradient(135deg, #3a0ca3, #00ddeb); /* Gradient khi hover */
+    }
+
+    /* Container chính */
+    .profile-container {
+        position: relative;
+        padding: 40px 0;
+        color: var(--text-light);
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Hiệu ứng fade-in */
+    keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tiêu đề chính */
+    .section-title {
+        font-family: 'Audiowide', sans-serif;
+        font-size: 2.8rem;
+        color: var(--galaxy-cyan);
+        text-shadow: var(--neon-glow);
+        margin-bottom: 40px;
+        text-align: center;
+        position: relative;
+        animation: glow 2s infinite alternate, textWave 3s infinite;
+    }
+
+    /* Hiệu ứng glow cho tiêu đề */
+    keyframes glow {
+        0% { text-shadow: 0 0 10px rgba(0, 221, 235, 0.5); }
+        100% { text-shadow: 0 0 20px rgba(0, 221, 235, 0.8); }
+    }
+
+    /* Hiệu ứng sóng chữ cho tiêu đề */
+    keyframes textWave {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+        100% { transform: translateY(0); }
+    }
+
+    /* Thẻ thông tin */
+    .profile-card {
+        background: #ffffff; /* Nền trắng như trong hình */
+        border: 2px solid var(--galaxy-cyan); /* Viền cyan */
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0, 221, 235, 0.3); /* Ánh sáng nhẹ */
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 20px rgba(0, 221, 235, 0.5);
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 10px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .info-label {
+        min-width: 150px;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        color: var(--galaxy-orange);
+        margin-right: 15px;
+    }
+
+    .info-value {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 500;
+        color: #34495e; /* Màu chữ tối để dễ đọc trên nền trắng */
+        word-break: break-word;
+    }
+
+    .info-input {
+        background: rgba(0, 221, 235, 0.1); /* Nền input nhẹ */
+        border: 2px solid var(--galaxy-purple);
+        color: #34495e;
+        border-radius: 8px;
+        padding: 5px;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 1rem;
+        font-weight: 500;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .info-input:focus {
+        background: rgba(0, 221, 235, 0.2);
+        border-color: var(--galaxy-cyan);
+        box-shadow: var(--neon-glow);
+    }
+
+    /* Nút hành động */
+    .btn {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        border-radius: 8px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin: 0 5px;
+    }
+
+    .btn-primary {
+        background: var(--gradient-galaxy);
+        border: 2px solid var(--galaxy-cyan);
+        color: var(--text-light);
+    }
+
+    .btn-primary:hover {
+        background: var(--gradient-galaxy-hover);
+        color: var(--galaxy-dark);
+        box-shadow: var(--neon-glow);
+        transform: scale(1.05) rotate(2deg);
+    }
+
+    /* Hiệu ứng sóng lan tỏa khi nhấn nút */
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:active::before {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+    }
+
+    /* Thông báo */
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        color: var(--text-light);
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 500;
+        max-width: 600px;
+        margin: 0 auto 20px;
+        animation: slideIn 0.5s ease-in-out;
+    }
+
+    .alert-success {
+        background: rgba(40, 167, 69, 0.2);
+        border: 2px solid var(--galaxy-cyan);
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+    }
+
+    .alert-danger {
+        background: rgba(255, 111, 97, 0.2);
+        border: 2px solid var(--galaxy-orange);
+        box-shadow: 0 0 10px rgba(255, 111, 97, 0.3);
+    }
+
+    keyframes slideIn {
+        0% { opacity: 0; transform: translateX(-20px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Hiệu ứng ngôi sao nền */
+    .profile-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+        opacity: 0.1;
+        z-index: -1;
+        animation: starfield 50s linear infinite;
+    }
+
+    keyframes starfield {
+        0% { background-position: 0 0; }
+        100% { background-position: 1000px 1000px; }
+    }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .profile-card {
+            margin: 0 15px;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            min-width: 100%;
+            margin-bottom: 5px;
+        }
+    }
+</style>
+
+<div class="profile-container container">
+    <h2 class="section-title">
+        <span>Thông tin tài khoản</span>
+    </h2>
+
+    <div id="notification" class="alert" style="display: none;"></div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="profile-card">
+                <div class="card-body">
+                    @using (Html.BeginForm("Update", "KhachHang", FormMethod.Post, new { id = "editForm" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.KhachHangID)
+                        @Html.HiddenFor(model => model.SoLanDangNhapSai)
+                        @Html.HiddenFor(model => model.ThoiGianKhoa)
+                        @Html.HiddenFor(model => model.NgayCapNhat)
+
+                        <div class="info-item">
+                            <span class="info-label">Tên khách hàng:</span>
+                            @Html.TextBoxFor(model => model.TenKhachHang, new { @class = "info-input", required = "required" })
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            @Html.TextBoxFor(model => model.Email, new { @class = "info-input", type = "email", required = "required" })
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Số điện thoại:</span>
+                            @Html.TextBoxFor(model => model.SoDienThoai, new { @class = "info-input", type = "tel" })
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Địa chỉ:</span>
+                            @Html.TextBoxFor(model => model.DiaChi, new { @class = "info-input" })
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Số lần đăng nhập sai:</span>
+                            <span class="info-value">@Model.SoLanDangNhapSai</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Thời gian khóa (nếu có):</span>
+                            <span class="info-value">@(Model.ThoiGianKhoa.HasValue ? Model.ThoiGianKhoa.Value.ToString("dd/MM/yyyy HH:mm") : "Không khóa")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Ngày cập nhật:</span>
+                            <span class="info-value">@(Model.NgayCapNhat.HasValue ? Model.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")</span>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary" id="saveButton">Lưu</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Gửi form chỉnh sửa qua AJAX
+            $("#editForm").on("submit", function (e) {
+                e.preventDefault(); // Chặn hành vi submit mặc định của form
+
+                var form = $(this);
+                if (!form[0].checkValidity()) {
+                    form[0].reportValidity();
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("Update", "KhachHang")',
+                    type: 'POST',
+                    data: form.serialize(),
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            // Hiển thị thông báo thành công trong notification div
+                            $("#notification").removeClass("alert-danger").addClass("alert-success").text(response.message).show();
+                        } else {
+                            // Hiển thị thông báo lỗi
+                            $("#notification").removeClass("alert-success").addClass("alert-danger").text(response.message).show();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX error:", xhr.responseText, status, error);
+                        $("#notification").removeClass("alert-success").addClass("alert-danger").text("Đã xảy ra lỗi, vui lòng thử lại!").show();
+                    }
+                });
+            });
+        });
+    </script>
+}

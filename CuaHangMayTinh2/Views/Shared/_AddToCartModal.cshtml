@@ -1,0 +1,585 @@
+﻿@* Views/Shared/_AddToCartModal.cshtml *@
+
+<div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToCartModalLabel">
+                    <i class="bi bi-cart-plus-fill me-2 text-primary"></i>Thêm vào giỏ hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="product-image-wrapper">
+                            <div class="product-image-container">
+                                <img id="cartModalProductImage" src="/images/default.jpg" alt="Sản phẩm" class="img-fluid product-image">
+                                <div class="product-badges">
+                                    <span class="badge bg-danger d-none" id="cartModalProductDiscount">-10%</span>
+                                    <span class="badge bg-success d-none" id="cartModalProductNew">Mới</span>
+                                </div>
+                            </div>
+                            <div class="product-thumbnails mt-2 d-none" id="cartModalProductThumbnails">
+                                <!-- Thumbnails sẽ được thêm bằng JavaScript nếu có -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h5 id="cartModalProductName" class="product-title mb-2"></h5>
+
+                        <div class="product-rating mb-2">
+                            <div class="stars">
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-fill text-warning"></i>
+                                <i class="bi bi-star-half text-warning"></i>
+                            </div>
+                            <span class="rating-text text-muted ms-2" id="cartModalProductRating">4.5</span>
+                        </div>
+
+                        <div class="price-container mb-3">
+                            <span class="current-price text-danger fw-bold fs-4" id="cartModalProductPrice"></span>
+                            <span class="original-price text-muted text-decoration-line-through ms-2 d-none" id="cartModalProductOriginalPrice">1,200,000 đ</span>
+                        </div>
+
+                        <div class="product-specs mb-3">
+                            <div class="spec-item d-flex align-items-center mb-1">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span id="cartModalProductSpec1">Bảo hành 12 tháng chính hãng</span>
+                            </div>
+                            <div class="spec-item d-flex align-items-center mb-1">
+                                <i class="bi bi-truck text-primary me-2"></i>
+                                <span id="cartModalProductSpec2">Giao hàng miễn phí toàn quốc</span>
+                            </div>
+                            <div class="spec-item d-flex align-items-center">
+                                <i class="bi bi-arrow-repeat text-info me-2"></i>
+                                <span id="cartModalProductSpec3">Đổi trả trong 7 ngày</span>
+                            </div>
+                        </div>
+
+                        <div class="stock-info mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-box-seam text-secondary me-2"></i>
+                                <span class="text-muted">Tồn kho: </span>
+                                <span id="cartModalProductStock" class="fw-bold ms-1"></span>
+                                <span class="stock-status ms-2" id="cartModalStockStatus">
+                                    <span class="badge bg-success">Còn hàng</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="quantity-selector mb-4">
+                            <label for="cartModalQuantity" class="form-label fw-medium">
+                                <i class="bi bi- me-1"></i>Số lượng:
+                            </label>
+                            <div class="input-group quantity-input-group">
+                                <button type="button" class="btn btn-outline-primary" id="cartDecreaseQuantity">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" class="form-control text-center" id="cartModalQuantity" value="1" min="1">
+                                <button type="button" class="btn btn-outline-primary" id="cartIncreaseQuantity">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <small id="cartQuantityError" class="text-danger d-none mt-1">
+                                <i class="bi bi-exclamation-circle me-1"></i>
+                                <span>Số lượng không hợp lệ</span>
+                            </small>
+                        </div>
+
+                        <div class="total-price mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-medium">Tổng tiền:</span>
+                                <span class="text-danger fw-bold fs-5" id="cartModalTotalPrice">0 đ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Hủy
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmAddToCart">
+                    <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+                </button>
+                <button type="button" class="btn btn-success" id="buyNowButton">
+                    <i class="bi bi-lightning-fill me-1"></i>Mua ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Phần tử ảo để tạo hiệu ứng bay vào giỏ hàng -->
+<div id="flyToCartElement" class="d-none"></div>
+
+<style>
+    /* Modal Animation */
+    .modal.fade .modal-dialog {
+        transform: translateY(-20px) scale(0.95);
+        opacity: 0;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    /* Modal Styling */
+    #addToCartModal .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+    }
+
+    #addToCartModal .modal-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 1rem 1.5rem;
+    }
+
+    #addToCartModal .modal-title {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    #addToCartModal .modal-body {
+        padding: 1.5rem;
+    }
+
+    #addToCartModal .modal-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Product Image Styling */
+    .product-image-wrapper {
+        position: relative;
+    }
+
+    .product-image-container {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+        .product-image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .product-image {
+        max-height: 90%;
+        max-width: 90%;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+
+    .product-image-container:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .product-badges {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+        .product-badges .badge {
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+    /* Product Thumbnails */
+    .product-thumbnails {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+
+    .product-thumbnail {
+        width: 50px;
+        height: 50px;
+        border-radius: 6px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+        .product-thumbnail:hover {
+            transform: translateY(-2px);
+        }
+
+        .product-thumbnail.active {
+            border-color: #3498db;
+        }
+
+        .product-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* Product Title */
+    .product-title {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.25rem;
+        line-height: 1.4;
+        margin-bottom: 0.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Product Rating */
+    .product-rating {
+        display: flex;
+        align-items: center;
+    }
+
+    .stars {
+        display: flex;
+        align-items: center;
+    }
+
+        .stars i {
+            font-size: 0.9rem;
+            margin-right: 1px;
+        }
+
+    /* Price Styling */
+    .current-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #e74c3c;
+    }
+
+    .original-price {
+        font-size: 1rem;
+        color: #95a5a6;
+    }
+
+    /* Quantity Selector */
+    .quantity-input-group {
+        width: 140px;
+    }
+
+        .quantity-input-group .btn {
+            width: 40px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: all 0.2s ease;
+        }
+
+            .quantity-input-group .btn:hover {
+                transform: translateY(-1px);
+            }
+
+    #cartModalQuantity {
+        height: 38px;
+        text-align: center;
+        font-weight: 600;
+        border-left: 0;
+        border-right: 0;
+        width: 60px;
+    }
+
+        #cartModalQuantity::-webkit-inner-spin-button,
+        #cartModalQuantity::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+    #cartModalQuantity {
+        -moz-appearance: textfield;
+    }
+
+    /* Button Styling */
+    .modal-footer .btn {
+        padding: 0.5rem 1.25rem;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .modal-footer .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    .modal-footer .btn-primary {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border: none;
+    }
+
+    .modal-footer .btn-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        border: none;
+    }
+
+    /* Fly to Cart Animation */
+    #flyToCartElement {
+        position: fixed;
+        z-index: 9999;
+        width: 50px;
+        height: 50px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        border-radius: 50%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        pointer-events: none;
+    }
+
+    /* Responsive Adjustments */
+    media (max-width: 767.98px) {
+        .modal-dialog
+
+    {
+        margin: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    .product-image-container {
+        height: 150px;
+        margin-bottom: 1rem;
+    }
+
+    .product-title {
+        font-size: 1.1rem;
+    }
+
+    .current-price {
+        font-size: 1.25rem;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+        .modal-footer .btn {
+            width: 100%;
+        }
+
+    }
+
+    /* Animation for Add to Cart Success */
+    keyframes addedToCart {
+        0%
+
+    {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+    }
+
+    .added-to-cart {
+        animation: addedToCart 0.5s ease;
+    }
+
+    /* Stock Status */
+    .stock-status .badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 4px;
+    }
+
+    /* Total Price */
+    .total-price {
+        background-color: #f8f9fa;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px dashed #dee2e6;
+    }
+</style>
+
+<script>
+    // Hàm tính tổng tiền
+    function updateTotalPrice() {
+        const price = parseFloat($('#cartModalProductPrice').text().replace(/[^\d]/g, ''));
+        const quantity = parseInt($('#cartModalQuantity').val());
+
+        if (!isNaN(price) && !isNaN(quantity)) {
+            const totalPrice = price * quantity;
+            $('#cartModalTotalPrice').text(totalPrice.toLocaleString('vi-VN') + ' đ');
+        }
+    }
+
+    // Hàm tạo hiệu ứng bay vào giỏ hàng
+    function flyToCart(imgElement) {
+        // Lấy vị trí của hình ảnh sản phẩm
+        const imgPosition = imgElement.offset();
+        const imgWidth = imgElement.width();
+        const imgHeight = imgElement.height();
+
+        // Lấy vị trí của giỏ hàng
+        const cartIcon = $('.cart-icon');
+        const cartPosition = cartIcon.offset();
+
+        // Nếu không tìm thấy giỏ hàng, thử tìm phần tử có class cart-badge
+        if (!cartPosition) {
+            cartIcon = $('.cart-badge');
+            cartPosition = cartIcon.offset();
+        }
+
+        // Nếu vẫn không tìm thấy, thoát
+        if (!cartPosition) return;
+
+        // Tạo phần tử bay
+        const flyElement = $('#flyToCartElement');
+        flyElement.css({
+            'background-image': `url(${imgElement.attr('src')})`,
+            'top': imgPosition.top,
+            'left': imgPosition.left,
+            'width': imgWidth * 0.3,
+            'height': imgHeight * 0.3,
+            'opacity': 1,
+            'display': 'block'
+        });
+
+        // Tạo hiệu ứng bay
+        flyElement.animate({
+            top: cartPosition.top,
+            left: cartPosition.left,
+            width: 20,
+            height: 20,
+            opacity: 0.7
+        }, 800, 'easeOutQuart', function () {
+            // Khi bay đến nơi, tạo hiệu ứng nhấp nháy cho giỏ hàng
+            cartIcon.addClass('added-to-cart');
+
+            // Ẩn phần tử bay
+            flyElement.hide();
+
+            // Xóa class sau khi hoàn thành animation
+            setTimeout(function () {
+                cartIcon.removeClass('added-to-cart');
+            }, 500);
+        });
+    }
+
+    // Khởi tạo khi document ready
+    $(document).ready(function () {
+        // Cập nhật tổng tiền khi số lượng thay đổi
+        $('#cartModalQuantity').on('input', function () {
+            updateTotalPrice();
+        });
+
+        // Cập nhật tổng tiền khi tăng/giảm số lượng
+        $('#cartIncreaseQuantity, #cartDecreaseQuantity').on('click', function () {
+            updateTotalPrice();
+        });
+
+        // Cập nhật tổng tiền khi modal hiển thị
+        $('#addToCartModal').on('shown.bs.modal', function () {
+            updateTotalPrice();
+
+            // Cập nhật trạng thái tồn kho
+            const stockQuantity = parseInt($('#cartModalProductStock').text());
+            if (stockQuantity <= 0) {
+                $('#cartModalStockStatus').html('<span class="badge bg-danger">Hết hàng</span>');
+                $('#confirmAddToCart, #buyNowButton').attr('disabled', true);
+            } else if (stockQuantity <= 5) {
+                $('#cartModalStockStatus').html('<span class="badge bg-warning text-dark">Sắp hết hàng</span>');
+                $('#confirmAddToCart, #buyNowButton').attr('disabled', false);
+            } else {
+                $('#cartModalStockStatus').html('<span class="badge bg-success">Còn hàng</span>');
+                $('#confirmAddToCart, #buyNowButton').attr('disabled', false);
+            }
+        });
+
+        // Xử lý nút mua ngay
+        $('#buyNowButton').on('click', function () {
+            const productId = $('#confirmAddToCart').data('id');
+            const quantity = parseInt($('#cartModalQuantity').val());
+
+            if (isNaN(quantity) || quantity < 1) {
+                $('#cartQuantityError').text('Số lượng không hợp lệ').removeClass('d-none');
+                return;
+            }
+
+            // Tạo hiệu ứng bay vào giỏ hàng
+            flyToCart($('#cartModalProductImage'));
+
+            // Thêm vào giỏ hàng và chuyển đến trang thanh toán
+            $.ajax({
+                url: '/GioHang/AddToCartWithQuantity',
+                type: 'POST',
+                data: { productId: productId, quantity: quantity },
+                success: function (response) {
+                    if (response.success) {
+                        // Đóng modal
+                        $('#addToCartModal').modal('hide');
+
+                        // Chuyển đến trang thanh toán
+                        setTimeout(function () {
+                            window.location.href = '/GioHang/ThanhToan';
+                        }, 800);
+                    } else {
+                        showToast(response.message, 'error', 'Lỗi');
+                    }
+                },
+                error: function () {
+                    showToast('Đã xảy ra lỗi, vui lòng thử lại!', 'error');
+                }
+            });
+        });
+
+        // Thêm xử lý hiệu ứng bay vào giỏ hàng cho nút xác nhận thêm vào giỏ
+        const originalConfirmAddToCart = $('#confirmAddToCart').click;
+        $('#confirmAddToCart').click(function (e) {
+            // Tạo hiệu ứng bay vào giỏ hàng
+            flyToCart($('#cartModalProductImage'));
+
+            // Gọi hàm xử lý gốc sau khi hiệu ứng bay hoàn thành
+            setTimeout(function () {
+                originalConfirmAddToCart.call(this, e);
+            }.bind(this), 800);
+
+            // Ngăn không cho hàm gốc chạy ngay lập tức
+            return false;
+        });
+    });
+</script>
